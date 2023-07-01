@@ -2,40 +2,21 @@ import React, { useEffect, useState } from 'react'
 import { Box, Grid } from '@chakra-ui/react'
 import { Tile, TileState } from '../dijkstra/Tile'
 import { GridTile } from './GridTile'
-import { BOMB_COST, COLS, DEST_COST, EMPTY_COST, Node, ROWS, WALL_COST } from '../dijkstra/Pathfinder'
+import { BOMB_COST, COLS, INITIAL_MATRIX_STATE, Node, ROWS, WALL_COST, getNeighbors } from '../dijkstra/Pathfinder'
 import { motion } from 'framer-motion'
 
 interface WorldProps {
 }
 
-const INITIAL_TILE_STATE: Tile[][] = []
 
-for (let j = 0; j < ROWS; j++) {
-    const row: Tile[] = []
-
-    for (let i = 0; i < COLS; i++) {
-        if (j === ROWS / 2 + 1) {
-            if (i === COLS * 0.1) {
-                row.push(new Tile(TileState.SRC, j, i, EMPTY_COST))
-            }
-            else if (i === COLS * 0.9) {
-                row.push(new Tile(TileState.DEST, j, i, DEST_COST))
-            }
-        }
-        else {
-            row.push(new Tile(TileState.EMPTY, j, i, EMPTY_COST))
-        }
-    }
-    INITIAL_TILE_STATE.push(row)
-}
 
 export const World: React.FC<WorldProps> = ({ }) => {
     var _distances: number[][] = Array(ROWS).fill(null).map(() => Array(COLS).fill(1000))
-    var _parents: Map<Node, Node> = new Map()
-    var _matrix = INITIAL_TILE_STATE
+    var _parents: Node[] = []
+    var _matrix = INITIAL_MATRIX_STATE
 
     const [distances, setDistances] = useState<number[][]>(_distances)
-    const [parents, setParents] = useState<Map<Node, Node>>(_parents)
+    const [parents, setParents] = useState<Node[]>(_parents)
     const [matrix, setMatrix] = useState<Tile[][]>(_matrix)
 
 
@@ -43,14 +24,14 @@ export const World: React.FC<WorldProps> = ({ }) => {
     useEffect(() => {
         _dijkstraShortestPathCostGenerator()
         _getShortestPathSequence()
-    }, [distances])
+    }, [])
 
     const _resetDistanceMatrix = (): void => {
         _distances = Array(ROWS).fill(null).map(() => Array(COLS).fill(1000))
     }
 
     const _resetParentMatrix = () => {
-        _parents = new Map()
+        _parents = new Array<Node>()
     }
 
     const _dijkstraShortestPathCostGenerator = (): void => {
@@ -64,13 +45,13 @@ export const World: React.FC<WorldProps> = ({ }) => {
 
         while (queue.length > 0) {
             const u = dequeue(queue)
-            const neighbors = getNeighbors(u.row, u.col)
+            const neighbors = getNeighbors(u.row, u.col, _matrix)
             for (let i = 0; i < neighbors.length; i++) {
                 const v = neighbors[i]
                 const alt = _distances[u.row][u.col] + v.dist // alt = dist[u] + G.E(u, v)
                 if (alt < _distances[v.row][v.col]) {
                     _distances[v.row][v.col] = alt
-                    _parents.set(v, u)
+                    _parents[v.row * COLS + v.col] = u
                     queue.push(v)
                 }
             }
@@ -81,7 +62,15 @@ export const World: React.FC<WorldProps> = ({ }) => {
 
     const _getShortestPathSequence = (): void => {
         const sequence: Node[] = []
-        const dest = { row: 13, col: 40 }
+        let current = _parents[13 * COLS + 40]
+        while (current && (current.row !== 13 || current.col !== 10)) {
+            sequence.push(current)
+            _matrix[current.row][current.col].setTileState(TileState.PATH)
+            current = _parents[current.row * COLS + current.col]
+        }
+        console.log(sequence)
+
+        // _animateShortestPath(sequence)
     }
 
     const _temporaryWeightedEdges = (): void => {
@@ -118,26 +107,13 @@ export const World: React.FC<WorldProps> = ({ }) => {
         return queue.shift()!
     }
 
-    const getNeighbors = (row: number, col: number): Node[] => {
-        const neighbors = []
-        if (isValidCell(row - 1, col))
-            neighbors.push({ row: row - 1, col: col, dist: _matrix[row - 1][col].dist }) // Up
-        if (isValidCell(row + 1, col))
-            neighbors.push({ row: row + 1, col: col, dist: _matrix[row + 1][col].dist })
-        if (isValidCell(row, col - 1))
-            neighbors.push({ row: row, col: col - 1, dist: _matrix[row][col - 1].dist })
-        if (isValidCell(row, col + 1))
-            neighbors.push({ row: row, col: col + 1, dist: _matrix[row][col + 1].dist })
-        return neighbors
-    }
 
-    const isValidCell = (row: number, col: number): boolean => row >= 0 && row < ROWS && col >= 0 && col < COLS
-
-
-    return <Box className='flex justify-center'><Grid templateColumns='repeat(50, 1fr)' className='mx-20 my-10'>
-        {_matrix.map((tileRow) => tileRow.map((tile) => <GridTile key={Math.random()}
-            parents={parents}
-            distances={distances} tile={tile} />))}
-    </Grid></Box>
+    return <Box className='flex justify-center'>
+        <Grid templateColumns='repeat(50, 1fr)' className='mx-20 my-10'>
+            {_matrix.map((tileRow) => tileRow.map((tile) => <GridTile key={Math.random()}
+                parents={parents}
+                distances={distances} tile={tile} />))}
+        </Grid>
+    </Box>
 
 }

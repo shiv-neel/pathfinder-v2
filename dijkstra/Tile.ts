@@ -16,7 +16,7 @@ export class Tile {
     visited?: boolean
     inPath?: boolean
 
-    constructor(tileState: TileState,  r: number, c: number, dist: number, visited?: boolean, inPath?: boolean, ) {
+    constructor(tileState: TileState, r: number, c: number, dist: number, visited?: boolean, inPath?: boolean) {
         this.tileState = tileState
         this.visited = visited
         this.inPath = inPath
