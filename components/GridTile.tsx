@@ -3,21 +3,22 @@ import { Tile, TileState } from '../dijkstra/Tile'
 import { GiBrickWall } from 'react-icons/gi'
 import { getIconFromState } from '../constants/icons'
 import { useEffect, useState } from 'react'
-import { Node, Pathfinder } from '../dijkstra/Pathfinder'
+import { Node } from '../dijkstra/Pathfinder'
 
 interface GridTileProps {
-    pathfinder: Pathfinder
     distances: number[][]
-    parents: Node[][]
+    parents: Map<Node, Node>
     tile: Tile
 }
 
-export const GridTile: React.FC<GridTileProps> = ({ pathfinder, distances, parents, tile }) => {
+export const GridTile: React.FC<GridTileProps> = ({ distances, parents, tile }) => {
     const [state, setState] = useState<TileState>(tile.tileState)
-    const optimisticUpdateTileState = () => {
-        pathfinder.setWall(tile.row!, tile.col!)
-        setState(tile.tileState === TileState.EMPTY ? TileState.WALL : TileState.EMPTY)
-    }
+
+    // const setWall = (row: number, col: number): void => {
+    //     console.log(row, col)
+    //     const tile = this.matrix[row][col]
+    //     this.matrix[row][col] = new Tile(TileState.WALL, tile.row, tile.col, WALL_COST)
+    //   }
 
     if (!distances[tile.row]) return <></>
 
@@ -28,7 +29,7 @@ export const GridTile: React.FC<GridTileProps> = ({ pathfinder, distances, paren
 
     // if (pathfinder.getSequence().filter(u => u.row === tile.row && u.col === tile.col)) textColor = 'green.500'
 
-    return (<Box onClick={optimisticUpdateTileState}>
+    return (<Box onClick={() => null}>
         <Box color={textColor} className='flex justify-center items-center cursor-pointer' border='0.1px solid' borderColor={'gray.600'} minW={7} minH={7}>
 
             {distances[tile.row][tile.col]}
