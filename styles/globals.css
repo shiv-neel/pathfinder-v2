@@ -25,16 +25,6 @@ a {
   border: 0.5px solid #666;
 }
 
-.node-finish {
-  background-color: #444;
-  border-radius: 100%;
-  border: none;
-}
-
-.node-start {
-  background-color: #444;
-}
-
 .node-wall {
   background-color: #f2f3f4;
   border: none;
@@ -55,21 +45,24 @@ a {
   0% {
     transform: scale(0.3);
     background-color: #D27685;
-    border-radius: 50%;
+    border-radius: 100%;
   }
 
   50% {
     background-color: #9E4784;
+    border-radius: 50%;
   }
 
   75% {
     transform: scale(1.2);
     background-color: #66347F;
+    border-radius: 25%;
   }
 
   100% {
     transform: scale(1);
-    background-color: #37306B;
+    background-color: #450175;
+    border-radius: 0%;
   }
 }
 
@@ -83,21 +76,19 @@ a {
   animation-fill-mode: forwards;
   animation-play-state: running;
   border: none;
+  background-color: #1DB954;
 }
 
 @keyframes shortestPath {
   0% {
     transform: scale(0.6);
-    background-color: rgb(255, 254, 106);
   }
 
   50% {
     transform: scale(1.2);
-    background-color: rgb(255, 254, 106);
   }
 
   100% {
     transform: scale(1);
-    background-color: rgb(255, 254, 106);
   }
 }

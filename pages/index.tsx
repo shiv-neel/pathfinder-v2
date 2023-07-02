@@ -6,10 +6,9 @@ import { useState } from 'react'
 import { TileState } from '../dijkstra/Tile'
 
 const Home: NextPage = () => {
-  const [editingState, setEditingState] = useState(TileState.SRC)
   return (
-    <Box className='flex flex-col min-h-screen' backgroundColor={'#121212'}>
-      <Toolbar editingState={editingState} setEditingState={setEditingState} />
+    <Box className='flex flex-col min-h-screen' backgroundColor={'#1f1f1f1'}>
+      <Toolbar />
       <World />
     </Box>
   )

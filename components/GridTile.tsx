@@ -5,31 +5,21 @@ import { Tile, TileState } from '../dijkstra/Tile'
 import { getIconFromState } from '../constants/icons'
 
 interface GridTileProps {
-    matrix: Tile[][]
-    distances: number[][]
-    parents: Tile[]
     tile: Tile
 }
 
-export const GridTile: React.FC<GridTileProps> = ({ matrix, distances, parents, tile }) => {
-    const [state, setState] = useState<TileState>(tile.tileState)
-    const [isWall, setIsWall] = useState<boolean>(tile.isWall)
+export const GridTile: React.FC<GridTileProps> = ({ tile }) => {
 
-    // const setWall = (row: number, col: number): void => {
-    //     console.log(row, col)
-    //     const tile = this.matrix[row][col]
-    //     this.matrix[row][col] = new Tile(TileState.WALL, tile.row, tile.col, WALL_COST)
-    //   }
 
     const className =
-        state === TileState.DEST
+        tile.tileState === TileState.DEST
             ? 'node-finish'
-            : state === TileState.SRC
+            : tile.tileState === TileState.SRC
                 ? 'node-start'
-                : isWall ? 'node-wall' : ''
+                : tile.isWall ? 'node-wall' : ''
 
 
-    return (<Box onClick={() => null}>
+    return (<Box>
         <Box
             minW={7}
             minH={7}>

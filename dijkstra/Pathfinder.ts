@@ -1,7 +1,7 @@
 import { Tile, TileState } from './Tile'
 
 export const ROWS = 25
-export const COLS = 50
+export const COLS = 58
 
 export const INITIAL_SRC_ROW = ROWS / 2 + 1
 export const INITIAL_SRC_COL = COLS * 0.1
@@ -18,19 +18,8 @@ export const INITIAL_MATRIX_STATE: Tile[][] = []
 
 for (let j = 0; j < ROWS; j++) {
     const row: Tile[] = []
-
     for (let i = 0; i < COLS; i++) {
-        if (j === INITIAL_SRC_ROW) {
-            if (i === INITIAL_SRC_COL) {
-                row.push(new Tile(TileState.SRC, j, i, 0))
-            }
-            else if (i === INITIAL_DEST_COL) {
-                row.push(new Tile(TileState.DEST, j, i, DEST_COST))
-            }
-        }
-        else {
             row.push(new Tile(TileState.UNVISITED, j, i, EMPTY_COST))
-        }
     }
     INITIAL_MATRIX_STATE.push(row)
 }

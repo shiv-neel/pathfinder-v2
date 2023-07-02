@@ -41,4 +41,8 @@ export class Tile {
         this.isWall = isWall
     }
 
+    toggleWallState() {
+        this.isWall = !this.isWall
+    }
+
 }

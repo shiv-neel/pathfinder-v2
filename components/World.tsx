@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react'
-import { Box, Grid } from '@chakra-ui/react'
+import React, { use, useContext, useEffect, useState } from 'react'
+import { Box, Button, Grid } from '@chakra-ui/react'
 import { Tile, TileState } from '../dijkstra/Tile'
 import { GridTile } from './GridTile'
 import { BOMB_COST, COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, getNeighbors } from '../dijkstra/Pathfinder'
 import { motion } from 'framer-motion'
+import { AppContext } from './AppContext'
 
 interface WorldProps {
 }
@@ -16,18 +17,35 @@ export const World: React.FC<WorldProps> = ({ }) => {
     var _matrix = INITIAL_MATRIX_STATE
     var _visitedSet: Tile[] = []
 
-    const [distances, setDistances] = useState<number[][]>(_distances)
-    const [parents, setParents] = useState<Tile[]>(_parents)
-    const [matrix, setMatrix] = useState<Tile[][]>(_matrix)
     const [src, setSrc] = useState<Tile>(new Tile(TileState.SRC, 13, 10))
-    const [dest, setDest] = useState<Tile>(new Tile(TileState.DEST, 13, 40))
+    const [dest, setDest] = useState<Tile>(new Tile(TileState.DEST, 15, 15))
 
+    const { isVisualizing, setIsVisualizing, resetBoard, setResetBoard } = useContext(AppContext)
 
+    _matrix[src.row][src.col].setTileState(TileState.SRC)
+    _matrix[dest.row][dest.col].setTileState(TileState.DEST)
 
     useEffect(() => {
-        _dijkstraShortestPathCostGenerator(src.row, src.col, dest.row, dest.col)
-        _getShortestPathSequence(src.row, src.col, dest.row, dest.col)
+        _dijkstraShortestPathCostGenerator()
+        _getShortestPathSequence()
+
     }, [])
+
+    useEffect(() => {
+        if (!resetBoard) return
+        _resetMatrix()
+        _resetDistanceMatrix()
+        _resetParentMatrix()
+        setResetBoard(false)
+    }, [resetBoard])
+
+
+    const _resetMatrix = (): void => {
+        _matrix = INITIAL_MATRIX_STATE
+        _matrix[src.row][src.col].setTileState(TileState.SRC)
+        _matrix[dest.row][dest.col].setTileState(TileState.DEST)
+
+    }
 
     const _resetDistanceMatrix = (): void => {
         _distances = Array(ROWS).fill(null).map(() => Array(COLS).fill(1000))
@@ -37,14 +55,18 @@ export const World: React.FC<WorldProps> = ({ }) => {
         _parents = new Array<Tile>()
     }
 
-    const _dijkstraShortestPathCostGenerator = (srcRow: number, srcCol: number, destRow: number, destCol: number): void => {
+    const _dijkstraShortestPathCostGenerator = (): void => {
         _resetDistanceMatrix()
         _resetParentMatrix()
+
+        const srcRow = src.row
+        const srcCol = src.col
+        const destRow = dest.row
+        const destCol = dest.col
+
         const queue: Tile[] = [new Tile(TileState.UNVISITED, srcRow, srcCol)]
         _distances[srcRow][srcCol] = 0
-        _matrix[srcRow][srcCol].setTileState(TileState.SRC)
-        _matrix[destRow][destCol].setTileState(TileState.DEST)
-        _temporaryWeightedEdges()
+        // _temporaryWeightedEdges()
 
         while (queue.length > 0) {
             const u = dequeue(queue)
@@ -60,8 +82,6 @@ export const World: React.FC<WorldProps> = ({ }) => {
                         _matrix[v.row][v.col].setTileState(TileState.VISITED)
 
                     if (v.row === destRow && v.col === destCol) {
-                        setDistances(_distances)
-                        setParents(_parents)
                         return
                     }
                     queue.push(v)
@@ -70,11 +90,14 @@ export const World: React.FC<WorldProps> = ({ }) => {
                 }
             }
         }
-        setDistances(_distances)
-        setParents(_parents)
     }
 
-    const _getShortestPathSequence = (srcRow: number, srcCol: number, destRow: number, destCol: number): void => {
+    const _getShortestPathSequence = (): void => {
+        const srcRow = src.row
+        const srcCol = src.col
+        const destRow = dest.row
+        const destCol = dest.col
+
         const sequence: Tile[] = []
         let current = _parents[destRow * COLS + destCol]
         while (current && (current.row !== srcRow || current.col !== srcCol)) {
@@ -86,11 +109,12 @@ export const World: React.FC<WorldProps> = ({ }) => {
         _animateDijkstra(sequence)
     }
 
-    const _animateDijkstra = (sequence: Tile[]): void => {
+    const _animateDijkstra = (sequence: Tile[]) => {
         for (let i = 0; i <= _visitedSet.length; i++) {
             if (i === _visitedSet.length) {
                 setTimeout(() => {
                     _animateShortestPath(sequence)
+
                 }, 10 * i)
                 return
             }
@@ -113,31 +137,6 @@ export const World: React.FC<WorldProps> = ({ }) => {
         }
     }
 
-    const _temporaryWeightedEdges = (): void => {
-        _matrix[8][30].setIsWall(true)
-        _matrix[9][30].setIsWall(true)
-        _matrix[10][30].setIsWall(true)
-        _matrix[11][30].setIsWall(true)
-        _matrix[12][30].setIsWall(true)
-        _matrix[13][30].setIsWall(true)
-        _matrix[14][30].setIsWall(true)
-        _matrix[15][30].setIsWall(true)
-        _matrix[8][12].setIsWall(true)
-        _matrix[9][12].setIsWall(true)
-        _matrix[10][12].setIsWall(true)
-        _matrix[11][12].setIsWall(true)
-        _matrix[12][12].setIsWall(true)
-        _matrix[13][12].setIsWall(true)
-        _matrix[14][12].setIsWall(true)
-        _matrix[15][12].setIsWall(true)
-        for (let row = 0; row < ROWS; row++) {
-            for (let col = 0; col < COLS; col++) {
-                if (_matrix[row][col].isWall) {
-                    _matrix[row][col].dist = WALL_COST
-                }
-            }
-        }
-    }
 
     const dequeue = (queue: Tile[]): Tile => {
         queue.sort((a, b) => _distances[a.row][a.col] - _distances[b.row][b.col])
@@ -146,11 +145,9 @@ export const World: React.FC<WorldProps> = ({ }) => {
 
 
     return <Box className='flex justify-center'>
-        <Grid templateColumns='repeat(50, 1fr)' className='mx-20 my-10'>
+        <Grid templateColumns='repeat(58, 1fr)' className='mx-20 my-10'>
             {_matrix.map((tileRow) => tileRow.map((tile) => <GridTile key={Math.random()}
-                matrix={matrix}
-                parents={parents}
-                distances={distances} tile={tile} />))}
+                tile={tile} />))}
         </Grid>
     </Box>
 
