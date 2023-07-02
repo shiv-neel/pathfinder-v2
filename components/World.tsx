@@ -14,16 +14,19 @@ export const World: React.FC<WorldProps> = ({ }) => {
     var _distances: number[][] = Array(ROWS).fill(null).map(() => Array(COLS).fill(1000))
     var _parents: Node[] = []
     var _matrix = INITIAL_MATRIX_STATE
+    var _visitedSet: Node[] = []
 
     const [distances, setDistances] = useState<number[][]>(_distances)
     const [parents, setParents] = useState<Node[]>(_parents)
     const [matrix, setMatrix] = useState<Tile[][]>(_matrix)
+    const [src, setSrc] = useState<Node>({ row: 13, col: 10 })
+    const [dest, setDest] = useState<Node>({ row: 13, col: 40 })
 
 
 
     useEffect(() => {
-        _dijkstraShortestPathCostGenerator()
-        _getShortestPathSequence()
+        _dijkstraShortestPathCostGenerator(src.row, src.col, dest.row, dest.col)
+        _getShortestPathSequence(src.row, src.col, dest.row, dest.col)
     }, [])
 
     const _resetDistanceMatrix = (): void => {
@@ -34,13 +37,13 @@ export const World: React.FC<WorldProps> = ({ }) => {
         _parents = new Array<Node>()
     }
 
-    const _dijkstraShortestPathCostGenerator = (): void => {
+    const _dijkstraShortestPathCostGenerator = (srcRow: number, srcCol: number, destRow: number, destCol: number): void => {
         _resetDistanceMatrix()
         _resetParentMatrix()
-        const queue: Node[] = [{ row: 13, col: 10, dist: 0 }]
-        _distances[13][10] = 0
-        _matrix[13][10].setTileState(TileState.SRC)
-        _matrix[13][40].setTileState(TileState.DEST)
+        const queue: Node[] = [{ row: srcRow, col: srcCol, dist: 0 }]
+        _distances[srcRow][srcCol] = 0
+        _matrix[srcRow][srcCol].setTileState(TileState.SRC)
+        _matrix[destRow][destCol].setTileState(TileState.DEST)
         _temporaryWeightedEdges()
 
         while (queue.length > 0) {
@@ -48,11 +51,22 @@ export const World: React.FC<WorldProps> = ({ }) => {
             const neighbors = getNeighbors(u.row, u.col, _matrix)
             for (let i = 0; i < neighbors.length; i++) {
                 const v = neighbors[i]
-                const alt = _distances[u.row][u.col] + v.dist // alt = dist[u] + G.E(u, v)
+                const alt = _distances[u.row][u.col] + v.dist! // alt = dist[u] + G.E(u, v)
                 if (alt < _distances[v.row][v.col]) {
+
                     _distances[v.row][v.col] = alt
                     _parents[v.row * COLS + v.col] = u
+                    if (_matrix[v.row][v.col].getTileState() !== TileState.WALL)
+                        _matrix[v.row][v.col].setTileState(TileState.VISITED)
                     queue.push(v)
+                    if (!_visitedSet.filter((node) => node.row === v.row && node.col === v.col).length)
+                        _visitedSet.push(v)
+                    if (v.row === destRow && v.col === destCol) {
+                        _matrix[v.row][v.col].setTileState(TileState.DEST)
+                        setDistances(_distances)
+                        setParents(_parents)
+                        return
+                    }
                 }
             }
         }
@@ -60,17 +74,42 @@ export const World: React.FC<WorldProps> = ({ }) => {
         setParents(_parents)
     }
 
-    const _getShortestPathSequence = (): void => {
+    const _getShortestPathSequence = (srcRow: number, srcCol: number, destRow: number, destCol: number): void => {
         const sequence: Node[] = []
-        let current = _parents[13 * COLS + 40]
-        while (current && (current.row !== 13 || current.col !== 10)) {
+        let current = _parents[destRow * COLS + destCol]
+        while (current && (current.row !== srcRow || current.col !== srcCol)) {
             sequence.push(current)
             _matrix[current.row][current.col].setTileState(TileState.PATH)
             current = _parents[current.row * COLS + current.col]
         }
-        console.log(sequence)
+        sequence.reverse()
+        _animateDijkstra(sequence)
+    }
 
-        // _animateShortestPath(sequence)
+    const _animateDijkstra = (sequence: Node[]): void => {
+        for (let i = 0; i <= _visitedSet.length; i++) {
+            if (i === _visitedSet.length) {
+                setTimeout(() => {
+                    _animateShortestPath(sequence)
+                }, 10 * i)
+                return
+            }
+            setTimeout(() => {
+                const node = _visitedSet[i]
+                document.getElementById(`node-${node.row}-${node.col}`)!.className =
+                    'node node-visited'
+            }, 10 * i)
+        }
+    }
+
+    const _animateShortestPath = (sequence: Node[]) => {
+        for (let i = 0; i < sequence.length; i++) {
+            setTimeout(() => {
+                const node = sequence[i]
+                document.getElementById(`node-${node.row}-${node.col}`)!.className =
+                    'node node-shortest-path'
+            }, 50 * i)
+        }
     }
 
     const _temporaryWeightedEdges = (): void => {
@@ -111,6 +150,7 @@ export const World: React.FC<WorldProps> = ({ }) => {
     return <Box className='flex justify-center'>
         <Grid templateColumns='repeat(50, 1fr)' className='mx-20 my-10'>
             {_matrix.map((tileRow) => tileRow.map((tile) => <GridTile key={Math.random()}
+                matrix={matrix}
                 parents={parents}
                 distances={distances} tile={tile} />))}
         </Grid>

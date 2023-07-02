@@ -6,9 +6,11 @@ export const theme = extendTheme({
 	fonts: {
 		heading: 'Libre Franklin',
 		body: 'Libre Franklin',
-	},
-	
+	},  
+	initialColorMode: 'dark',
+	useSystemColorMode: false,
 })
+
 
 export const getBackgroundHoverColor = (colorMode: string) => {
 	return colorMode === 'light' ? 'bg-gray-100' : 'bg-gray-700'

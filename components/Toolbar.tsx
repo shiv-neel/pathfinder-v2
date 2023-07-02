@@ -1,7 +1,7 @@
 import { Box, Button, Heading, Menu, MenuButton, MenuItem, MenuItemOption, MenuList } from '@chakra-ui/react'
 import { TileState } from '../dijkstra/Tile'
 import { Dispatch, SetStateAction } from 'react'
-import { destinationVertexIcon, sourceVertexIcon, wallIcon, shortestPathIcon } from '../constants/icons'
+import { destinationVertexIcon, sourceVertexIcon } from '../constants/icons'
 import { FaPlus } from 'react-icons/fa'
 import { BiChevronDown } from 'react-icons/bi'
 
@@ -18,8 +18,8 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editingState, setEditingState 
         <Box className='flex gap-10'>
             <LegendButton editingState={editingState} setEditingState={setEditingState} text={'Source'} state={TileState.SRC} icon={sourceVertexIcon} />
             <LegendButton editingState={editingState} setEditingState={setEditingState} text={'Destination'} state={TileState.DEST} icon={destinationVertexIcon} />
-            <LegendButton editingState={editingState} setEditingState={setEditingState} text={'Wall'} state={TileState.WALL} icon={wallIcon} />
-            <LegendButton editingState={editingState} setEditingState={setEditingState} text={'Shortest Path'} state={TileState.PATH} icon={shortestPathIcon} />
+            <LegendButton editingState={editingState} setEditingState={setEditingState} text={'Wall'} state={TileState.WALL} />
+            <LegendButton editingState={editingState} setEditingState={setEditingState} text={'Shortest Path'} state={TileState.PATH} />
             <Box className='flex ml-auto gap-6'>
                 <Menu>
                     <MenuButton as={Button} rightIcon={<BiChevronDown />}>
@@ -33,6 +33,9 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editingState, setEditingState 
                         <MenuItem isDisabled>Generic DFS (WIP)</MenuItem>
                     </MenuList>
                 </Menu>
+                <Button>
+                    Erase Board
+                </Button>
                 <Button variant={'outline'}>
                     Erase Board
                 </Button>
@@ -43,7 +46,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editingState, setEditingState 
 }
 
 interface LegendButtonProps extends ToolbarProps {
-    icon: JSX.Element
+    icon?: JSX.Element
     text: string
     state: TileState
 }

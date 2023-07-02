@@ -11,7 +11,7 @@ export const DEST_COST = 20
 export interface Node {
     row: number
     col: number
-    dist: number
+    dist?: number
 }
 
 export const INITIAL_MATRIX_STATE: Tile[][] = []

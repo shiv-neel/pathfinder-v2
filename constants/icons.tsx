@@ -1,18 +1,10 @@
-import { BiSolidCar } from 'react-icons/bi'
-import { FaSquare } from 'react-icons/fa'
-import { FiTarget } from 'react-icons/fi'
-import { GiBrickWall } from 'react-icons/gi'
+import { VscTarget } from 'react-icons/vsc'
+import { FaChevronRight } from 'react-icons/fa'
 import { TileState } from '../dijkstra/Tile'
 
-export const sourceVertexIcon = <BiSolidCar className='text-blue-500 text-2xl' />
+export const sourceVertexIcon = <FaChevronRight className='text-blue-500 text-2xl' />
 
-export const destinationVertexIcon = <FiTarget className='text-blue-500 text-2xl' />
-
-export const wallIcon = <GiBrickWall className='text-amber-900 text-2xl' />
-
-export const visitedIcon = <FaSquare className='text-yellow-500 text-2xl' />
-
-export const shortestPathIcon = <FaSquare className='text-blue-500 text-2xl' />
+export const destinationVertexIcon = <VscTarget className='text-red-500 text-2xl' />
 
 export const getIconFromState = (state: TileState) => {
     switch (state) {
@@ -20,11 +12,20 @@ export const getIconFromState = (state: TileState) => {
             return sourceVertexIcon
         case TileState.DEST:
             return destinationVertexIcon
+        default:
+            return <></>
+    }
+}
+
+export const getTileColorFromstate = (state: TileState) => {
+    switch (state) {
         case TileState.WALL:
-            return wallIcon
-        case TileState.VISITED:
-            return visitedIcon
+            return 'blue.900'
         case TileState.PATH:
-            return shortestPathIcon
+            return 'green.700'
+        case TileState.VISITED:
+            return 'blue.800'
+        default:
+            return 'none'
     }
 }

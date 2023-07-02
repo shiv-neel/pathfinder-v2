@@ -1,18 +1,20 @@
-import { Box, useColorMode } from '@chakra-ui/react'
+import { Box, Popover, PopoverBody, PopoverContent, PopoverTrigger, useColorMode } from '@chakra-ui/react'
 import { Tile, TileState } from '../dijkstra/Tile'
 import { GiBrickWall } from 'react-icons/gi'
-import { getIconFromState } from '../constants/icons'
+import { getIconFromState, getTileColorFromstate } from '../constants/icons'
 import { useEffect, useState } from 'react'
 import { Node } from '../dijkstra/Pathfinder'
 
 interface GridTileProps {
+    matrix: Tile[][]
     distances: number[][]
     parents: Node[]
     tile: Tile
 }
 
-export const GridTile: React.FC<GridTileProps> = ({ distances, parents, tile }) => {
+export const GridTile: React.FC<GridTileProps> = ({ matrix, distances, parents, tile }) => {
     const [state, setState] = useState<TileState>(tile.tileState)
+    const [isWall, setIsWall] = useState<boolean>(tile.tileState === TileState.WALL)
 
     // const setWall = (row: number, col: number): void => {
     //     console.log(row, col)
@@ -22,21 +24,22 @@ export const GridTile: React.FC<GridTileProps> = ({ distances, parents, tile }) 
 
     if (!distances[tile.row]) return <></>
 
-    var textColor
+    const className =
+        state === TileState.DEST
+            ? 'node-finish'
+            : state === TileState.SRC
+                ? 'node-start'
+                : state === TileState.WALL
+                    ? 'node-wall'
+                    : ''
 
-    if (tile.getTileState() === TileState.WALL) textColor = 'red.500'
-    else if (tile.getTileState() === TileState.SRC || tile.getTileState() === TileState.DEST) textColor = 'blue.500'
-    else if (tile.getTileState() === TileState.PATH) textColor = 'green.500'
-
-    // if (pathfinder.getSequence().filter(u => u.row === tile.row && u.col === tile.col)) textColor = 'green.500'
 
     return (<Box onClick={() => null}>
-        <Box color={textColor} className='flex justify-center items-center cursor-pointer'
-            border='0.1px solid'
-            borderColor={'gray.600'}
+        <Box
+            border={'0.1px solid gray'}
             minW={7}
             minH={7}>
-            {distances[tile.row][tile.col]}
+            <Box id={`node-${tile.row}-${tile.col}`} className={`flex justify-center items-center cursor-pointer node ${className}`}>{getIconFromState(tile.getTileState())}</Box>
         </Box>
     </Box>)
 }
