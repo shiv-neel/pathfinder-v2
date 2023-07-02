@@ -2,15 +2,16 @@ import { BsCarFrontFill } from 'react-icons/bs'
 import { FiMapPin } from 'react-icons/fi'
 import { Tile, TileState } from '../dijkstra/Tile'
 import { Box } from '@chakra-ui/react'
+import { FaMapMarkerAlt } from 'react-icons/fa'
 
-export const sourceVertexIcon = <Box w={7} h={7} backgroundColor='#444'
+export const sourceVertexIcon = <Box w={7} h={7} backgroundColor='#006AFF'
     borderRadius={'15%'} className='flex items-center justify-center cursor-pointer'>
     <BsCarFrontFill className='text-lg' />
 </Box>
 
-export const destinationVertexIcon = <Box w={7} h={7} backgroundColor='#444'
+export const destinationVertexIcon = <Box w={7} h={7} backgroundColor='#E50914'
     borderRadius={'15%'} className='flex items-center justify-center cursor-pointer'>
-    <FiMapPin className='text-lg' />
+    <FaMapMarkerAlt className='text-lg' />
 </Box>
 
 export const wallIcon = <Box w={7} h={7} backgroundColor='white' borderRadius={'15%'}></Box>

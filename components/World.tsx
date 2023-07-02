@@ -1,35 +1,40 @@
 import React, { use, useContext, useEffect, useState } from 'react'
-import { Box, Button, Grid } from '@chakra-ui/react'
+import { Box, Button, Grid, Menu, MenuButton, MenuItem, MenuList } from '@chakra-ui/react'
 import { Tile, TileState } from '../dijkstra/Tile'
 import { GridTile } from './GridTile'
 import { BOMB_COST, COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, getNeighbors } from '../dijkstra/Pathfinder'
 import { motion } from 'framer-motion'
 import { AppContext } from './AppContext'
+import { BiCheck, BiChevronDown } from 'react-icons/bi'
+import { Algo } from '../models/types'
+import { Toolbar } from './Toolbar'
 
 interface WorldProps {
+    isShiftKeyPressed: boolean
 }
 
 
 
-export const World: React.FC<WorldProps> = ({ }) => {
+export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
     var _distances: number[][] = Array(ROWS).fill(null).map(() => Array(COLS).fill(1000))
     var _parents: Tile[] = []
     var _matrix = INITIAL_MATRIX_STATE
     var _visitedSet: Tile[] = []
 
+
     const [src, setSrc] = useState<Tile>(new Tile(TileState.SRC, 13, 10))
     const [dest, setDest] = useState<Tile>(new Tile(TileState.DEST, 15, 15))
-
+    const [algo, setAlgo] = useState<Algo>(Algo.DIJKSTRA)
     const { isVisualizing, setIsVisualizing, resetBoard, setResetBoard } = useContext(AppContext)
 
     _matrix[src.row][src.col].setTileState(TileState.SRC)
     _matrix[dest.row][dest.col].setTileState(TileState.DEST)
 
     useEffect(() => {
+        if (!isVisualizing) return
         _dijkstraShortestPathCostGenerator()
         _getShortestPathSequence()
-
-    }, [])
+    }, [isVisualizing])
 
     useEffect(() => {
         if (!resetBoard) return
@@ -114,7 +119,6 @@ export const World: React.FC<WorldProps> = ({ }) => {
             if (i === _visitedSet.length) {
                 setTimeout(() => {
                     _animateShortestPath(sequence)
-
                 }, 10 * i)
                 return
             }
@@ -143,10 +147,38 @@ export const World: React.FC<WorldProps> = ({ }) => {
         return queue.shift()!
     }
 
+    const menuItems = (): JSX.Element[] => {
+        const items: JSX.Element[] = []
+        for (const _algo of Object.values(Algo)) {
+            items.push(<MenuItem key={Math.random()} className='flex items-center' onClick={() => {
+                setAlgo(_algo)
+            }}>
+                <>{_algo == algo ? <BiCheck className='text-xl' /> : null}</>
+                <>{_algo}</></MenuItem>)
+        }
+        return items
+    }
 
-    return <Box className='flex justify-center'>
-        <Grid templateColumns='repeat(58, 1fr)' className='mx-20 my-10'>
+
+    return <Box className='flex flex-col justify-center'>
+        <Box className='flex gap-6 items-center justify-start mx-20 mb-5'>
+            <Toolbar />
+            <Box className='flex ml-auto'>
+                <Menu>
+                    <MenuButton as={Button} rightIcon={<BiChevronDown />}>
+                        Algorithm
+                    </MenuButton>
+                    <MenuList>
+                        {menuItems()}
+                    </MenuList>
+                </Menu>
+                <Button onClick={() => setIsVisualizing(true)}>visualize</Button>
+                <Button onClick={() => setResetBoard(true)} isDisabled={!isVisualizing}>reset</Button>
+            </Box>
+        </Box>
+        <Grid templateColumns='repeat(58, 1fr)' className='mx-auto'>
             {_matrix.map((tileRow) => tileRow.map((tile) => <GridTile key={Math.random()}
+                isShiftKeyPressed={isShiftKeyPressed}
                 tile={tile} />))}
         </Grid>
     </Box>

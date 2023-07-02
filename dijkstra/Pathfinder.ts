@@ -1,6 +1,6 @@
 import { Tile, TileState } from './Tile'
 
-export const ROWS = 25
+export const ROWS = 26
 export const COLS = 58
 
 export const INITIAL_SRC_ROW = ROWS / 2 + 1
