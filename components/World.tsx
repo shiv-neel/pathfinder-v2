@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react'
 import { Box, Grid } from '@chakra-ui/react'
 import { Tile, TileState } from '../dijkstra/Tile'
 import { GridTile } from './GridTile'
-import { BOMB_COST, COLS, INITIAL_MATRIX_STATE, Node, ROWS, WALL_COST, getNeighbors } from '../dijkstra/Pathfinder'
+import { BOMB_COST, COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, getNeighbors } from '../dijkstra/Pathfinder'
 import { motion } from 'framer-motion'
 
 interface WorldProps {
@@ -12,15 +12,15 @@ interface WorldProps {
 
 export const World: React.FC<WorldProps> = ({ }) => {
     var _distances: number[][] = Array(ROWS).fill(null).map(() => Array(COLS).fill(1000))
-    var _parents: Node[] = []
+    var _parents: Tile[] = []
     var _matrix = INITIAL_MATRIX_STATE
-    var _visitedSet: Node[] = []
+    var _visitedSet: Tile[] = []
 
     const [distances, setDistances] = useState<number[][]>(_distances)
-    const [parents, setParents] = useState<Node[]>(_parents)
+    const [parents, setParents] = useState<Tile[]>(_parents)
     const [matrix, setMatrix] = useState<Tile[][]>(_matrix)
-    const [src, setSrc] = useState<Node>({ row: 13, col: 10 })
-    const [dest, setDest] = useState<Node>({ row: 13, col: 40 })
+    const [src, setSrc] = useState<Tile>(new Tile(TileState.SRC, 13, 10))
+    const [dest, setDest] = useState<Tile>(new Tile(TileState.DEST, 13, 40))
 
 
 
@@ -34,13 +34,13 @@ export const World: React.FC<WorldProps> = ({ }) => {
     }
 
     const _resetParentMatrix = () => {
-        _parents = new Array<Node>()
+        _parents = new Array<Tile>()
     }
 
     const _dijkstraShortestPathCostGenerator = (srcRow: number, srcCol: number, destRow: number, destCol: number): void => {
         _resetDistanceMatrix()
         _resetParentMatrix()
-        const queue: Node[] = [{ row: srcRow, col: srcCol, dist: 0 }]
+        const queue: Tile[] = [new Tile(TileState.UNVISITED, srcRow, srcCol)]
         _distances[srcRow][srcCol] = 0
         _matrix[srcRow][srcCol].setTileState(TileState.SRC)
         _matrix[destRow][destCol].setTileState(TileState.DEST)
@@ -56,17 +56,17 @@ export const World: React.FC<WorldProps> = ({ }) => {
 
                     _distances[v.row][v.col] = alt
                     _parents[v.row * COLS + v.col] = u
-                    if (_matrix[v.row][v.col].getTileState() !== TileState.WALL)
+                    if (_matrix[v.row][v.col].isWall)
                         _matrix[v.row][v.col].setTileState(TileState.VISITED)
-                    queue.push(v)
-                    if (!_visitedSet.filter((node) => node.row === v.row && node.col === v.col).length)
-                        _visitedSet.push(v)
+
                     if (v.row === destRow && v.col === destCol) {
-                        _matrix[v.row][v.col].setTileState(TileState.DEST)
                         setDistances(_distances)
                         setParents(_parents)
                         return
                     }
+                    queue.push(v)
+                    if (!_visitedSet.filter((node) => node.row === v.row && node.col === v.col).length)
+                        _visitedSet.push(v)
                 }
             }
         }
@@ -75,7 +75,7 @@ export const World: React.FC<WorldProps> = ({ }) => {
     }
 
     const _getShortestPathSequence = (srcRow: number, srcCol: number, destRow: number, destCol: number): void => {
-        const sequence: Node[] = []
+        const sequence: Tile[] = []
         let current = _parents[destRow * COLS + destCol]
         while (current && (current.row !== srcRow || current.col !== srcCol)) {
             sequence.push(current)
@@ -86,7 +86,7 @@ export const World: React.FC<WorldProps> = ({ }) => {
         _animateDijkstra(sequence)
     }
 
-    const _animateDijkstra = (sequence: Node[]): void => {
+    const _animateDijkstra = (sequence: Tile[]): void => {
         for (let i = 0; i <= _visitedSet.length; i++) {
             if (i === _visitedSet.length) {
                 setTimeout(() => {
@@ -96,13 +96,14 @@ export const World: React.FC<WorldProps> = ({ }) => {
             }
             setTimeout(() => {
                 const node = _visitedSet[i]
-                document.getElementById(`node-${node.row}-${node.col}`)!.className =
-                    'node node-visited'
+                if (!_matrix[node.row][node.col].isWall)
+                    document.getElementById(`node-${node.row}-${node.col}`)!.className =
+                        'node node-visited'
             }, 10 * i)
         }
     }
 
-    const _animateShortestPath = (sequence: Node[]) => {
+    const _animateShortestPath = (sequence: Tile[]) => {
         for (let i = 0; i < sequence.length; i++) {
             setTimeout(() => {
                 const node = sequence[i]
@@ -113,35 +114,32 @@ export const World: React.FC<WorldProps> = ({ }) => {
     }
 
     const _temporaryWeightedEdges = (): void => {
-        _matrix[8][30].setTileState(TileState.WALL)
-        _matrix[9][30].setTileState(TileState.WALL)
-        _matrix[10][30].setTileState(TileState.WALL)
-        _matrix[11][30].setTileState(TileState.WALL)
-        _matrix[12][30].setTileState(TileState.WALL)
-        _matrix[13][30].setTileState(TileState.WALL)
-        _matrix[14][30].setTileState(TileState.WALL)
-        _matrix[15][30].setTileState(TileState.WALL)
-        _matrix[8][12].setTileState(TileState.WALL)
-        _matrix[9][12].setTileState(TileState.WALL)
-        _matrix[10][12].setTileState(TileState.WALL)
-        _matrix[11][12].setTileState(TileState.WALL)
-        _matrix[12][12].setTileState(TileState.WALL)
-        _matrix[13][12].setTileState(TileState.WALL)
-        _matrix[14][12].setTileState(TileState.WALL)
-        _matrix[15][12].setTileState(TileState.WALL)
+        _matrix[8][30].setIsWall(true)
+        _matrix[9][30].setIsWall(true)
+        _matrix[10][30].setIsWall(true)
+        _matrix[11][30].setIsWall(true)
+        _matrix[12][30].setIsWall(true)
+        _matrix[13][30].setIsWall(true)
+        _matrix[14][30].setIsWall(true)
+        _matrix[15][30].setIsWall(true)
+        _matrix[8][12].setIsWall(true)
+        _matrix[9][12].setIsWall(true)
+        _matrix[10][12].setIsWall(true)
+        _matrix[11][12].setIsWall(true)
+        _matrix[12][12].setIsWall(true)
+        _matrix[13][12].setIsWall(true)
+        _matrix[14][12].setIsWall(true)
+        _matrix[15][12].setIsWall(true)
         for (let row = 0; row < ROWS; row++) {
             for (let col = 0; col < COLS; col++) {
-                if (_matrix[row][col].getTileState() === TileState.WALL) {
+                if (_matrix[row][col].isWall) {
                     _matrix[row][col].dist = WALL_COST
-                }
-                else if (_matrix[row][col].getTileState() === TileState.BOMB) {
-                    _matrix[row][col].dist = BOMB_COST
                 }
             }
         }
     }
 
-    const dequeue = (queue: Node[]): Node => {
+    const dequeue = (queue: Tile[]): Tile => {
         queue.sort((a, b) => _distances[a.row][a.col] - _distances[b.row][b.col])
         return queue.shift()!
     }

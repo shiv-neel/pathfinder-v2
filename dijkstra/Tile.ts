@@ -1,9 +1,7 @@
 export enum TileState {
-    EMPTY,
     SRC,
     DEST,
-    WALL,
-    BOMB,
+    UNVISITED,
     VISITED,
     PATH
 }
@@ -13,24 +11,34 @@ export class Tile {
     row: number
     col: number
     dist: number
-    visited?: boolean
-    inPath?: boolean
+    isWall: boolean
 
-    constructor(tileState: TileState, r: number, c: number, dist: number, visited?: boolean, inPath?: boolean) {
+    constructor(tileState: TileState, row: number, col: number, dist: number = 0, isWall: boolean = false) {
         this.tileState = tileState
-        this.visited = visited
-        this.inPath = inPath
-        this.row = r
-        this.col = c
+        this.row = row
+        this.col = col
         this.dist = dist
+        this.isWall = isWall
     }
 
-    getTileState(): TileState {
-        return this.tileState
+    getRow(): number {
+        return this.row
+    }
+
+    getCol(): number {
+        return this.col
+    }
+
+    getDist(): number {
+        return this.dist
     }
 
     setTileState(tileState: TileState) {
         this.tileState = tileState
+    }
+
+    setIsWall(isWall: boolean) {
+        this.isWall = isWall
     }
 
 }

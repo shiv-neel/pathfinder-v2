@@ -18,7 +18,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ editingState, setEditingState 
         <Box className='flex gap-10'>
             <LegendButton editingState={editingState} setEditingState={setEditingState} text={'Source'} state={TileState.SRC} icon={sourceVertexIcon} />
             <LegendButton editingState={editingState} setEditingState={setEditingState} text={'Destination'} state={TileState.DEST} icon={destinationVertexIcon} />
-            <LegendButton editingState={editingState} setEditingState={setEditingState} text={'Wall'} state={TileState.WALL} />
+            <LegendButton editingState={editingState} setEditingState={setEditingState} text={'Wall'} state={TileState.UNVISITED} />
             <LegendButton editingState={editingState} setEditingState={setEditingState} text={'Shortest Path'} state={TileState.PATH} />
             <Box className='flex ml-auto gap-6'>
                 <Menu>

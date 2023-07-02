@@ -2,17 +2,17 @@ import { Tile, TileState } from './Tile'
 
 export const ROWS = 25
 export const COLS = 50
+
+export const INITIAL_SRC_ROW = ROWS / 2 + 1
+export const INITIAL_SRC_COL = COLS * 0.1
+
+export const INITIAL_DEST_ROW = ROWS / 2 + 1
+export const INITIAL_DEST_COL = COLS * 0.9
  
 export const EMPTY_COST = 5
 export const WALL_COST = 200
 export const BOMB_COST = 10
 export const DEST_COST = 20
-
-export interface Node {
-    row: number
-    col: number
-    dist?: number
-}
 
 export const INITIAL_MATRIX_STATE: Tile[][] = []
 
@@ -20,41 +20,41 @@ for (let j = 0; j < ROWS; j++) {
     const row: Tile[] = []
 
     for (let i = 0; i < COLS; i++) {
-        if (j === ROWS / 2 + 1) {
-            if (i === COLS * 0.1) {
-                row.push(new Tile(TileState.SRC, j, i, EMPTY_COST))
+        if (j === INITIAL_SRC_ROW) {
+            if (i === INITIAL_SRC_COL) {
+                row.push(new Tile(TileState.SRC, j, i, 0))
             }
-            else if (i === COLS * 0.9) {
+            else if (i === INITIAL_DEST_COL) {
                 row.push(new Tile(TileState.DEST, j, i, DEST_COST))
             }
         }
         else {
-            row.push(new Tile(TileState.EMPTY, j, i, EMPTY_COST))
+            row.push(new Tile(TileState.UNVISITED, j, i, EMPTY_COST))
         }
     }
     INITIAL_MATRIX_STATE.push(row)
 }
 
 
-export const getNeighbors = (row: number, col: number, matrix: Tile[][]): Node[] => {
+export const getNeighbors = (row: number, col: number, matrix: Tile[][]): Tile[] => {
   const neighbors = []
   if (isValidCell(row - 1, col))
-      neighbors.push({ row: row - 1, col: col, dist: matrix[row - 1][col].dist }) // Up
+      neighbors.push(new Tile(TileState.UNVISITED, row - 1, col, matrix[row - 1][col].dist)) // Up
   if (isValidCell(row + 1, col))
-      neighbors.push({ row: row + 1, col: col, dist: matrix[row + 1][col].dist })
+      neighbors.push(new Tile(TileState.UNVISITED, row + 1, col, matrix[row + 1][col].dist))
   if (isValidCell(row, col - 1))
-      neighbors.push({ row: row, col: col - 1, dist: matrix[row][col - 1].dist })
+      neighbors.push(new Tile(TileState.UNVISITED, row, col - 1, matrix[row][col - 1].dist))
   if (isValidCell(row, col + 1))
-      neighbors.push({ row: row, col: col + 1, dist: matrix[row][col + 1].dist })
+      neighbors.push(new Tile(TileState.UNVISITED, row, col + 1, matrix[row][col + 1].dist))
   return neighbors
 }
 
 const isValidCell = (row: number, col: number): boolean => row >= 0 && row < ROWS && col >= 0 && col < COLS
 
-export const getNodeFromIndex = (index: number): Node => {
+export const getNodeFromIndex = (index: number): Tile => {
     const row = Math.floor(index / COLS)
     const col = index % COLS
-    return { row, col, dist: 0 }
+    return new Tile(TileState.UNVISITED, row, col)
 }
 
-export const getIndexFromNode = (node: Node): number => node.row * COLS + node.col
+export const getIndexFromNode = (tile: Tile): number => tile.row * COLS + tile.col
