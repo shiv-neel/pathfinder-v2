@@ -1,3 +1,5 @@
+import { WALL_COST } from './main'
+
 export enum TileState {
     SRC,
     DEST,
@@ -37,12 +39,21 @@ export class Tile {
         this.tileState = tileState
     }
 
-    setIsWall(isWall: boolean) {
+    public setIsWall(isWall: boolean) {
         this.isWall = isWall
     }
 
+    public setDist(dist: number) {
+        this.dist = dist
+    }
+
     toggleWallState() {
-        this.isWall = !this.isWall
+        if (this.isWall) {
+            this.isWall = false
+        }
+        else {
+            this.isWall = true
+        }
     }
 
 }

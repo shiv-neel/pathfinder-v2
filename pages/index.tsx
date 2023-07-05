@@ -3,7 +3,10 @@ import { Box, Button, Heading } from '@chakra-ui/react'
 import { Toolbar } from '../components/Toolbar'
 import { World } from '../components/World'
 import { useEffect, useState } from 'react'
-import { TileState } from '../dijkstra/Tile'
+import { TileState } from '../pathfinder/Tile'
+import Footer from '../components/Footer'
+import { useDrag } from 'react-dnd'
+import WelcomeModal from '../components/WelcomeModal'
 
 const Home: NextPage = () => {
   const [isShiftKeyPressed, setIsShiftKeyPressed] = useState(false)
@@ -28,14 +31,16 @@ const Home: NextPage = () => {
       window.removeEventListener('keydown', handleKeyDown)
       window.removeEventListener('keyup', handleKeyUp)
     }
-  }, [])
+  }, [isShiftKeyPressed])
 
   return (
     <Box className='flex flex-col min-h-screen' backgroundColor={'#1e1e1e'}>
-      <Box className='flex items-center mx-20 my-10'>
-        <Heading as='h1'>Pathfinding Visualizer</Heading>
+      <Box>
+        <Toolbar />
       </Box>
       <World isShiftKeyPressed={isShiftKeyPressed} />
+      <WelcomeModal />
+      <Footer />
     </Box>
   )
 }

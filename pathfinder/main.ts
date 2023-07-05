@@ -1,6 +1,6 @@
 import { Tile, TileState } from './Tile'
 
-export const ROWS = 26
+export const ROWS = 24
 export const COLS = 58
 
 export const INITIAL_SRC_ROW = ROWS / 2 + 1
@@ -10,7 +10,7 @@ export const INITIAL_DEST_ROW = ROWS / 2 + 1
 export const INITIAL_DEST_COL = COLS * 0.9
  
 export const EMPTY_COST = 5
-export const WALL_COST = 200
+export const WALL_COST = Infinity
 export const BOMB_COST = 10
 export const DEST_COST = 20
 
@@ -47,3 +47,22 @@ export const getNodeFromIndex = (index: number): Tile => {
 }
 
 export const getIndexFromNode = (tile: Tile): number => tile.row * COLS + tile.col
+
+export const dequeue = (queue: Tile[], distances: number[][]): Tile => {
+    queue.sort((a, b) => distances[a.row][a.col] - distances[b.row][b.col])
+    return queue.shift()!
+}
+
+export interface PathGeneratorReturnStruct {
+    matrix: Tile[][]
+    distances: number[][]
+    parents: Tile[]
+    visitedSet: Tile[]
+}
+
+export const defaultPathGeneratorReturnStruct: PathGeneratorReturnStruct  = {
+    matrix: INITIAL_MATRIX_STATE,
+    distances: Array(ROWS).fill(null).map(() => Array(COLS).fill(1000)),
+    parents: new Array<Tile>(),
+    visitedSet: new Array<Tile>()
+}

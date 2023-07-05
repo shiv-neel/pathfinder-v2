@@ -1,6 +1,5 @@
 import { BsCarFrontFill } from 'react-icons/bs'
-import { FiMapPin } from 'react-icons/fi'
-import { Tile, TileState } from '../dijkstra/Tile'
+import { Tile, TileState } from '../pathfinder/Tile'
 import { Box } from '@chakra-ui/react'
 import { FaMapMarkerAlt } from 'react-icons/fa'
 
