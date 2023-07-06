@@ -30,11 +30,14 @@ const WelcomeModal = () => {
                     </ModalBody>
 
                     <ModalFooter>
-                        <Button variant='outline' mr={3} onClick={() => setPage(p => p - 1)} isDisabled={page === 0}>
+                        <Button variant='outline' mr={'auto'} onClick={onClose} colorScheme='black'>
+                            Skip Tutorial
+                        </Button>
+                        <Button variant='outline' mr={3} onClick={() => setPage(p => p - 1)} isDisabled={page === 0} colorScheme='black'>
                             Prev
                         </Button>
                         <Button variant='outline' mr={3}
-                            onClick={page < pages.length - 1 ? (() => setPage(p => p + 1)) : onClose}>
+                            onClick={page < pages.length - 1 ? (() => setPage(p => p + 1)) : onClose} colorScheme='black'>
                             {page < pages.length - 1 ? 'Next' : 'Close'}</Button>
                         {`(${page + 1}/${pages.length})`}
                     </ModalFooter>

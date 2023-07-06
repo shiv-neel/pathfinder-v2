@@ -11,6 +11,7 @@ import { FiMapPin, FiMove } from 'react-icons/fi'
 import { sourceVertexIcon } from '../constants/icons'
 import { BsCarFrontFill } from 'react-icons/bs'
 import { FaMapMarkerAlt } from 'react-icons/fa'
+import { dijkstraShortestPathCostGenerator } from '../pathfinder/dijkstra'
 
 interface WorldProps {
     isShiftKeyPressed: boolean
@@ -42,13 +43,9 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         _resetMatrix()
         _resetDistanceMatrix()
         _resetParentMatrix()
-        _visitedSet = []
+        _resetVisitedSet()
         setReset(false)
     }, [reset])
-
-    useEffect(() => {
-        console.log(src)
-    }, [src])
 
     const _resetAllWalls = (): void => {
         for (let row = 0; row < ROWS; row++) {
@@ -76,14 +73,18 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         _parents = new Array<Tile>()
     }
 
-    const _pathVisualizer = () => {
-        _dijkstraShortestPathCostGenerator()
-        _getShortestPathSequence()
+    const _resetVisitedSet = () => {
+        _visitedSet = new Array<Tile>()
     }
 
-    const _dijkstraShortestPathCostGenerator = (): void => {
+    const _pathVisualizer = () => {
+        _dfs()
+    }
+
+    const _dijkstra = (): void => {
         _resetDistanceMatrix()
         _resetParentMatrix()
+        _resetVisitedSet()
 
         const srcRow = src.row
         const srcCol = src.col
@@ -118,6 +119,41 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         _getShortestPathSequence()
     }
 
+    const _dfs = (): void => {
+        _resetDistanceMatrix()
+        _resetParentMatrix()
+        _resetVisitedSet()
+
+        const srcRow = src.row
+        const srcCol = src.col
+        const destRow = dest.row
+        const destCol = dest.col
+
+        const stack: Tile[] = []
+        stack.push(new Tile(TileState.UNVISITED, srcRow, srcCol)) // push start node to top of stack
+        _matrix[srcRow][srcCol].setTileState(TileState.VISITED) // mark start node as visited
+
+        while (stack.length > 0) {
+            const u = stack.pop()!
+            if (u.row === destRow && u.col === destCol) {
+                _getShortestPathSequence()
+                return
+            }
+            const neighbors = getNeighbors(u.row, u.col, _matrix)
+            for (let i = 0; i < neighbors.length; i++) {
+                const v = neighbors[i]
+                if (v.isWall) continue
+                if (!_visitedSet.filter((node) => node.row === v.row && node.col === v.col).length) {
+                    _matrix[v.row][v.col].setTileState(TileState.VISITED)
+                    _parents[v.row * COLS + v.col] = u
+                    stack.push(v)
+                    _visitedSet.push(v)
+                    console.log(stack.length)
+                }
+            }
+        }
+    }
+
     const _getShortestPathSequence = (): void => {
         const srcRow = src.row
         const srcCol = src.col
@@ -132,10 +168,10 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
             current = _parents[current.row * COLS + current.col]
         }
         sequence.reverse()
-        _animateDijkstra(sequence)
+        _animateVisits(sequence)
     }
 
-    const _animateDijkstra = (sequence: Tile[]) => {
+    const _animateVisits = (sequence: Tile[]) => {
         for (let i = 0; i <= _visitedSet.length; i++) {
             if (i === _visitedSet.length) {
                 setTimeout(() => {

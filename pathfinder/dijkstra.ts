@@ -20,7 +20,7 @@ export const dijkstraShortestPathCostGenerator = (matrix: Tile[][], srcRow: numb
         _resetParentMatrix()
     const queue: Tile[] = [new Tile(TileState.UNVISITED, srcRow, srcCol)]
     distances[srcRow][srcCol] = 0
-
+    console.log('dijkstraShortestPathCostGenerator')
     while (queue.length > 0) {
         const u = dequeue(queue, distances)
         if (u.isWall) continue
@@ -44,7 +44,10 @@ export const dijkstraShortestPathCostGenerator = (matrix: Tile[][], srcRow: numb
         }
     }
 
-    return {
+    const returnObj = {
         matrix, distances: distances, parents: parents, visitedSet: visitedSet
     }
+
+    console.log(returnObj)
+    return returnObj
 }

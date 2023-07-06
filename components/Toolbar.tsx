@@ -4,13 +4,15 @@ import { Dispatch, SetStateAction, useContext } from 'react'
 import { destinationVertexIcon, shortestPathIcon, sourceVertexIcon, wallIcon } from '../constants/icons'
 import { FaPlus } from 'react-icons/fa'
 import { BiCheck, BiChevronDown } from 'react-icons/bi'
+import { GiMarsPathfinder, GiPathDistance } from 'react-icons/gi'
 
 interface ToolbarProps { }
 
 export const Toolbar: React.FC<ToolbarProps> = ({ }) => {
 
-    return <Box className='flex items-center px-20 py-5 mb-10 bg-gray-900 shadow-xl'>
-        <Box>
+    return <Box className='flex items-center px-20 py-5 mb-10 mt-5'>
+        <Box className='flex items-center gap-3'>
+            <GiPathDistance className='text-5xl' />
             <Heading as='h1'>Pathfinding Visualizer</Heading>
         </Box>
         <Box className='flex justify-start flex-col ml-auto'>
@@ -31,7 +33,7 @@ interface LegendButtonProps extends ToolbarProps {
 }
 
 const LegendButton: React.FC<LegendButtonProps> = ({ icon, text, state }) => {
-    return <Box className='flex items-center gap-2'>
+    return <Box className='flex items-center gap-2 bottom-0'>
         {icon}
         {text}
     </Box>
