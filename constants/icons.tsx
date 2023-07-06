@@ -13,7 +13,9 @@ export const destinationVertexIcon = <Box w={7} h={7} backgroundColor='#E50914'
     <FaMapMarkerAlt className='text-lg' />
 </Box>
 
-export const wallIcon = <Box w={7} h={7} backgroundColor='white' borderRadius={'15%'}></Box>
+export const wallIcon = <Box w={7} h={7} backgroundColor='#FFFFFF' borderRadius={'15%'}></Box>
+
+export const visitedNodeIcon = <Box w={7} h={7} backgroundColor='#450175' border='1px solid gray' borderRadius={'15%'}></Box>
 
 export const shortestPathIcon = <Box w={7} h={7} backgroundColor='#1DB954' borderRadius={'15%'}></Box>
 

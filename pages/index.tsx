@@ -7,6 +7,9 @@ import { TileState } from '../pathfinder/Tile'
 import Footer from '../components/Footer'
 import { useDrag } from 'react-dnd'
 import WelcomeModal from '../components/WelcomeModal'
+import { COLS } from '../pathfinder/main'
+
+
 
 const Home: NextPage = () => {
   const [isShiftKeyPressed, setIsShiftKeyPressed] = useState(false)
@@ -34,12 +37,12 @@ const Home: NextPage = () => {
   }, [isShiftKeyPressed])
 
   return (
-    <Box className='flex flex-col min-h-screen' backgroundColor={'#1e1e1e'}>
+    <Box className='flex flex-col min-h-screen mx-auto' backgroundColor={'#1e1e1e'}>
       <Box>
         <Toolbar />
       </Box>
       <World isShiftKeyPressed={isShiftKeyPressed} />
-      <WelcomeModal />
+      {/* <WelcomeModal /> */}
       <Footer />
     </Box>
   )

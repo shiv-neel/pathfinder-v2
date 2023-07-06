@@ -2,7 +2,7 @@ import React, { use, useContext, useEffect, useState } from 'react'
 import { Box, Button, Grid, Menu, MenuButton, MenuItem, MenuList, Tooltip } from '@chakra-ui/react'
 import { Tile, TileState } from '../pathfinder/Tile'
 import { GridTile } from './GridTile'
-import { BOMB_COST, COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, dequeue, getNeighbors } from '../pathfinder/main'
+import { BOMB_COST, COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, dequeue, getNeighbors, isVisited } from '../pathfinder/main'
 import { motion } from 'framer-motion'
 import { BiCheck, BiChevronDown } from 'react-icons/bi'
 import { Algo } from '../models/types'
@@ -11,7 +11,6 @@ import { FiMapPin, FiMove } from 'react-icons/fi'
 import { sourceVertexIcon } from '../constants/icons'
 import { BsCarFrontFill } from 'react-icons/bs'
 import { FaMapMarkerAlt } from 'react-icons/fa'
-import { dijkstraShortestPathCostGenerator } from '../pathfinder/dijkstra'
 
 interface WorldProps {
     isShiftKeyPressed: boolean
@@ -78,14 +77,24 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
     }
 
     const _pathVisualizer = () => {
-        _dfs()
-    }
-
-    const _dijkstra = (): void => {
         _resetDistanceMatrix()
         _resetParentMatrix()
         _resetVisitedSet()
 
+        switch (algo) {
+            case Algo.DIJKSTRA:
+                _dijkstra()
+                break
+            case Algo.GENERIC_BFS:
+                _bfs()
+                break
+            case Algo.GENERIC_DFS:
+                _dfs()
+                break
+        }
+    }
+
+    const _dijkstra = (): void => {
         const srcRow = src.row
         const srcCol = src.col
         const destRow = dest.row
@@ -93,8 +102,8 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
 
         const queue: Tile[] = [new Tile(TileState.UNVISITED, srcRow, srcCol)]
         _distances[srcRow][srcCol] = 0
-
         while (queue.length > 0) {
+            console.log(queue)
             const u = dequeue(queue, _distances)
             if (u.isWall) continue
             const neighbors = getNeighbors(u.row, u.col, _matrix)
@@ -108,10 +117,11 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
                         _matrix[v.row][v.col].setTileState(TileState.VISITED)
 
                     if (v.row === destRow && v.col === destCol) {
+                        _getShortestPathSequence()
                         return
                     }
                     queue.push(v)
-                    if (!_visitedSet.filter((node) => node.row === v.row && node.col === v.col).length)
+                    if (!isVisited(_visitedSet, v))
                         _visitedSet.push(v)
                 }
             }
@@ -119,39 +129,65 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         _getShortestPathSequence()
     }
 
-    const _dfs = (): void => {
-        _resetDistanceMatrix()
-        _resetParentMatrix()
-        _resetVisitedSet()
-
+    const _bfs = (): void => {
         const srcRow = src.row
         const srcCol = src.col
         const destRow = dest.row
         const destCol = dest.col
 
-        const stack: Tile[] = []
-        stack.push(new Tile(TileState.UNVISITED, srcRow, srcCol)) // push start node to top of stack
-        _matrix[srcRow][srcCol].setTileState(TileState.VISITED) // mark start node as visited
+        const queue: Tile[] = [_matrix[srcRow][srcCol]]
 
-        while (stack.length > 0) {
-            const u = stack.pop()!
-            if (u.row === destRow && u.col === destCol) {
-                _getShortestPathSequence()
-                return
-            }
+        while (queue.length > 0) {
+            const u = queue.shift()!
+            if (u.isWall) continue
             const neighbors = getNeighbors(u.row, u.col, _matrix)
             for (let i = 0; i < neighbors.length; i++) {
                 const v = neighbors[i]
                 if (v.isWall) continue
-                if (!_visitedSet.filter((node) => node.row === v.row && node.col === v.col).length) {
-                    _matrix[v.row][v.col].setTileState(TileState.VISITED)
-                    _parents[v.row * COLS + v.col] = u
-                    stack.push(v)
+                if (!isVisited(_visitedSet, v)) {
                     _visitedSet.push(v)
-                    console.log(stack.length)
+                    _parents[v.row * COLS + v.col] = u
+                    if (v.row === destRow && v.col === destCol) {
+                        _getShortestPathSequence()
+                        return
+                    }
+                    queue.push(v)
                 }
             }
         }
+        _getShortestPathSequence()
+    }
+
+
+    const _dfs = (): void => {
+        const srcRow = src.row
+        const srcCol = src.col
+        const destRow = dest.row
+        const destCol = dest.col
+
+        _dfsRecursive(_matrix[srcRow][srcCol], _matrix[destRow][destCol])
+        _getShortestPathSequence()
+    }
+
+    const _dfsRecursive = (u: Tile, dest: Tile) => {
+        if (u.row === dest.row && u.col === dest.col) {
+            console.log('found')
+            console.log(_visitedSet)
+        }
+
+        if (u.isWall) return
+
+        _visitedSet.push(u)
+
+        const neighbors = getNeighbors(u.row, u.col, _matrix)
+        for (let i = 0; i < neighbors.length; i++) {
+            const v = neighbors[i]
+            if (!_matrix[v.row][v.col].isWall && !isVisited(_visitedSet, v)) {
+                _parents[v.row * COLS + v.col] = u
+                _dfsRecursive(v, dest)
+            }
+        }
+        _matrix[u.row][u.col].setTileState(TileState.VISITED)
     }
 
     const _getShortestPathSequence = (): void => {
@@ -159,7 +195,6 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         const srcCol = src.col
         const destRow = dest.row
         const destCol = dest.col
-
         const sequence: Tile[] = []
         let current = _parents[destRow * COLS + destCol]
         while (current && (current.row !== srcRow || current.col !== srcCol)) {
@@ -171,9 +206,10 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         _animateVisits(sequence)
     }
 
+
     const _animateVisits = (sequence: Tile[]) => {
         for (let i = 0; i <= _visitedSet.length; i++) {
-            if (i === _visitedSet.length) {
+            if (i === _visitedSet.length || _visitedSet[i].row === dest.row && _visitedSet[i].col === dest.col) {
                 setTimeout(() => {
                     _animateShortestPath(sequence)
                 }, 10 * i)
@@ -184,7 +220,10 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
             setTimeout(() => {
                 const node = _visitedSet[i]
                 if (!_matrix[node.row][node.col].isWall)
+
+
                     document.getElementById(`node-${node.row}-${node.col}`)!.className =
+
                         'node node-visited'
             }, 10 * i)
         }
@@ -218,11 +257,6 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         _matrix[row][col].setIsWall(true)
         _matrix[row][col].setDist(WALL_COST)
     }
-
-
-
-
-
 
     const menuItems = (): JSX.Element[] => {
         const items: JSX.Element[] = []
@@ -261,7 +295,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         <Box className='flex gap-6 items-center justify-start mx-20 mb-5'>
             <Box className='flex gap-6'>
                 <Menu>
-                    <MenuButton as={Button} rightIcon={<BiChevronDown />} className='bg-gray-200 text-black hover:text-white' variant='outline'>
+                    <MenuButton as={Button} rightIcon={<BiChevronDown />} variant='outline'>
                         Selected: {algo}
                     </MenuButton>
                     <MenuList bg='black'>
@@ -276,8 +310,9 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
                         {menuItems()}
                     </MenuList>
                 </Menu>
-                <Button onClick={_pathVisualizer} variant='outline'>Visualize Algorithm</Button>
-                <Button onClick={() => setReset(true)} variant='outline'>Reset Board</Button>
+                <Button onClick={_pathVisualizer} variant='outline' className='bg-purple-600'>Visualize Algorithm</Button>
+                <Button onClick={() => setReset(true)} variant='solid'>Reset Board</Button>
+
             </Box>
             <Box className='flex ml-auto gap-6 items-center'>
                 <Tooltip label='Move Source' aria-label='Move Source Node'>
@@ -292,7 +327,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
                 </Tooltip>
             </Box>
         </Box>
-        <Grid templateColumns='repeat(58, 1fr)' className='mx-auto'>
+        <Grid templateColumns={`repeat(${COLS}, 1fr)`} className='mx-auto'>
             {_matrix.map((tileRow) => tileRow.map((tile) => <GridTile key={Math.random()}
                 src={src}
                 setSrc={setSrc}

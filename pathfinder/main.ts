@@ -1,7 +1,7 @@
 import { Tile, TileState } from './Tile'
 
 export const ROWS = 24
-export const COLS = 58
+export var COLS = 58
 
 export const INITIAL_SRC_ROW = ROWS / 2 + 1
 export const INITIAL_SRC_COL = COLS * 0.1
@@ -24,7 +24,6 @@ for (let j = 0; j < ROWS; j++) {
     INITIAL_MATRIX_STATE.push(row)
 }
 
-
 export const getNeighbors = (row: number, col: number, matrix: Tile[][]): Tile[] => {
   const neighbors = []
   if (isValidCell(row - 1, col))
@@ -39,6 +38,10 @@ export const getNeighbors = (row: number, col: number, matrix: Tile[][]): Tile[]
 }
 
 const isValidCell = (row: number, col: number): boolean => row >= 0 && row < ROWS && col >= 0 && col < COLS
+
+export const isVisited = (visitedSet: Tile[], t: Tile): boolean => {
+    return !!visitedSet.find(tile => tile.row === t.row && tile.col === t.col)
+}
 
 export const getNodeFromIndex = (index: number): Tile => {
     const row = Math.floor(index / COLS)
