@@ -2,7 +2,7 @@ import React, { use, useContext, useEffect, useState } from 'react'
 import { Box, Button, Grid, Menu, MenuButton, MenuItem, MenuList, Tooltip } from '@chakra-ui/react'
 import { Tile, TileState } from '../pathfinder/Tile'
 import { GridTile } from './GridTile'
-import { BOMB_COST, COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, dequeue, getNeighbors, isVisited } from '../pathfinder/main'
+import { BOMB_COST, COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, dequeue, findKeyWithSmallestValue, getNeighbors, heuristic, isVisited } from '../pathfinder/main'
 import { motion } from 'framer-motion'
 import { BiCheck, BiChevronDown } from 'react-icons/bi'
 import { Algo } from '../models/types'
@@ -85,6 +85,9 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
             case Algo.DIJKSTRA:
                 _dijkstra()
                 break
+            case Algo.A_STAR:
+                _aStar()
+                break
             case Algo.GENERIC_BFS:
                 _bfs()
                 break
@@ -103,7 +106,6 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         const queue: Tile[] = [new Tile(TileState.UNVISITED, srcRow, srcCol)]
         _distances[srcRow][srcCol] = 0
         while (queue.length > 0) {
-            console.log(queue)
             const u = dequeue(queue, _distances)
             if (u.isWall) continue
             const neighbors = getNeighbors(u.row, u.col, _matrix)
@@ -127,6 +129,55 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
             }
         }
         _getShortestPathSequence()
+    }
+
+    const _aStar = (): void => {
+        const srcRow = src.row
+        const srcCol = src.col
+        const destRow = dest.row
+        const destCol = dest.col
+
+        const openSet = new Set<Tile>() // set of discovered nodes that may need to be (re-)expanded
+        openSet.add(_matrix[srcRow][srcCol])
+
+        const gOn = new Map<Tile, number>() // map of distances from start along optimal path
+        gOn.set(_matrix[srcRow][srcCol], 0) // distance from start to start is 0
+
+        const fOn = new Map<Tile, number>() // map of heuristic function values for each node
+        fOn.set(_matrix[srcRow][srcCol], heuristic(_matrix[srcRow][srcCol], _matrix[destRow][destCol]))
+
+        while (openSet.size > 0) {
+            const current = findKeyWithSmallestValue(fOn)
+            if (current == dest)
+                console.log(reconstructPath(_parents, current))
+
+            openSet.delete(current)
+            const neighbors = getNeighbors(current.row, current.col, _matrix)
+            for (let i = 0; i < neighbors.length; i++) {
+                const v = neighbors[i]
+                const gScoreTentative = (gOn.get(current) ?? Infinity) + v.dist!
+                if (gScoreTentative < (gOn.get(v) ?? Infinity)) {
+                    _parents[v.row * COLS + v.col] = current
+                    gOn.set(v, gScoreTentative)
+                    fOn.set(v, gScoreTentative + heuristic(v, _matrix[destRow][destCol]))
+                    if (!isVisited(_visitedSet, v))
+                        _visitedSet.push(v)
+                    if (_matrix[v.row][v.col].isWall)
+                        _matrix[v.row][v.col].setTileState(TileState.VISITED)
+                    if (!openSet.has(v))
+                        openSet.add(v)
+                }
+            }
+        }
+    }
+
+    const reconstructPath = (parents: Tile[], current: Tile): Tile[] => {
+        const totalPath = [current]
+        while (parents[current.row * COLS + current.col] != null) {
+            current = parents[current.row * COLS + current.col]
+            totalPath.unshift(current)
+        }
+        return totalPath
     }
 
     const _bfs = (): void => {

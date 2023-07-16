@@ -56,16 +56,24 @@ export const dequeue = (queue: Tile[], distances: number[][]): Tile => {
     return queue.shift()!
 }
 
-export interface PathGeneratorReturnStruct {
-    matrix: Tile[][]
-    distances: number[][]
-    parents: Tile[]
-    visitedSet: Tile[]
+export const heuristic = (t1: Tile, t2: Tile): number => {
+    return getManhattanDistance(t1, t2)
 }
 
-export const defaultPathGeneratorReturnStruct: PathGeneratorReturnStruct  = {
-    matrix: INITIAL_MATRIX_STATE,
-    distances: Array(ROWS).fill(null).map(() => Array(COLS).fill(1000)),
-    parents: new Array<Tile>(),
-    visitedSet: new Array<Tile>()
+const getManhattanDistance = (t1: Tile, t2: Tile): number => {
+    return Math.abs(t1.row - t2.row) + Math.abs(t1.col - t2.col)
 }
+
+export const findKeyWithSmallestValue = (map: Map<Tile, number>): any | undefined => {
+    let smallestValue = Infinity
+    let smallestKey: any
+  
+    map.forEach((value, key) => {
+        if (value < smallestValue) {
+          smallestValue = value
+          smallestKey = key
+        }
+      })
+  
+    return smallestKey
+  }
