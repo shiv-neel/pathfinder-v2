@@ -42,7 +42,7 @@ const Home: NextPage = () => {
         <Toolbar />
       </Box>
       <World isShiftKeyPressed={isShiftKeyPressed} />
-      {/* <WelcomeModal /> */}
+      <WelcomeModal />
       <Footer />
     </Box>
   )

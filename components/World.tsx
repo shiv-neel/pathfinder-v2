@@ -2,15 +2,15 @@ import React, { use, useContext, useEffect, useState } from 'react'
 import { Box, Button, Grid, Menu, MenuButton, MenuItem, MenuList, Tooltip } from '@chakra-ui/react'
 import { Tile, TileState } from '../pathfinder/Tile'
 import { GridTile } from './GridTile'
-import { BOMB_COST, COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, dequeue, findKeyWithSmallestValue, getNeighbors, heuristic, isVisited } from '../pathfinder/main'
-import { motion } from 'framer-motion'
+import { TRAFFIC_COST, COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, dequeue, getNeighbors, isVisited } from '../pathfinder/main'
 import { BiCheck, BiChevronDown } from 'react-icons/bi'
 import { Algo } from '../models/types'
-import { Toolbar } from './Toolbar'
-import { FiMapPin, FiMove } from 'react-icons/fi'
-import { sourceVertexIcon } from '../constants/icons'
+import { FiMove } from 'react-icons/fi'
 import { BsCarFrontFill } from 'react-icons/bs'
-import { FaMapMarkerAlt } from 'react-icons/fa'
+import { FaGrinTears, FaMapMarkerAlt, FaTrafficLight, FaCogs } from 'react-icons/fa'
+import { AiOutlinePlus } from 'react-icons/ai'
+import { PiPathBold } from 'react-icons/pi'
+import { MdOutlineReplay } from 'react-icons/md'
 
 interface WorldProps {
     isShiftKeyPressed: boolean
@@ -25,13 +25,15 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
     var _visitedSet: Tile[] = []
 
 
-    const [src, setSrc] = useState<Tile>(new Tile(TileState.SRC, 13, 10))
-    const [dest, setDest] = useState<Tile>(new Tile(TileState.DEST, 15, 15))
+    const [src, setSrc] = useState<Tile>(new Tile(TileState.SRC, 12, 10))
+    const [dest, setDest] = useState<Tile>(new Tile(TileState.DEST, 12, 40))
+    const [trafficJams, setTrafficJams] = useState<Tile[]>([])
     const [algo, setAlgo] = useState<Algo>(Algo.DIJKSTRA)
     const [reset, setReset] = useState<boolean>(false)
 
     const [isEditingSrc, setIsEditingSrc] = useState<boolean>(false)
     const [isEditingDest, setIsEditingDest] = useState<boolean>(false)
+    const [isAddingTrafficJam, setIsAddingTrafficJam] = useState<boolean>(false)
 
     _matrix[src.row][src.col].setTileState(TileState.SRC)
     _matrix[dest.row][dest.col].setTileState(TileState.DEST)
@@ -85,9 +87,6 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
             case Algo.DIJKSTRA:
                 _dijkstra()
                 break
-            case Algo.A_STAR:
-                _aStar()
-                break
             case Algo.GENERIC_BFS:
                 _bfs()
                 break
@@ -131,79 +130,30 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         _getShortestPathSequence()
     }
 
-    const _aStar = (): void => {
-        const srcRow = src.row
-        const srcCol = src.col
-        const destRow = dest.row
-        const destCol = dest.col
-
-        const openSet = new Set<Tile>() // set of discovered nodes that may need to be (re-)expanded
-        openSet.add(_matrix[srcRow][srcCol])
-
-        const gOn = new Map<Tile, number>() // map of distances from start along optimal path
-        gOn.set(_matrix[srcRow][srcCol], 0) // distance from start to start is 0
-
-        const fOn = new Map<Tile, number>() // map of heuristic function values for each node
-        fOn.set(_matrix[srcRow][srcCol], heuristic(_matrix[srcRow][srcCol], _matrix[destRow][destCol]))
-
-        while (openSet.size > 0) {
-            const current = findKeyWithSmallestValue(fOn)
-            if (current == dest)
-                console.log(reconstructPath(_parents, current))
-
-            openSet.delete(current)
-            const neighbors = getNeighbors(current.row, current.col, _matrix)
-            for (let i = 0; i < neighbors.length; i++) {
-                const v = neighbors[i]
-                const gScoreTentative = (gOn.get(current) ?? Infinity) + v.dist!
-                if (gScoreTentative < (gOn.get(v) ?? Infinity)) {
-                    _parents[v.row * COLS + v.col] = current
-                    gOn.set(v, gScoreTentative)
-                    fOn.set(v, gScoreTentative + heuristic(v, _matrix[destRow][destCol]))
-                    if (!isVisited(_visitedSet, v))
-                        _visitedSet.push(v)
-                    if (_matrix[v.row][v.col].isWall)
-                        _matrix[v.row][v.col].setTileState(TileState.VISITED)
-                    if (!openSet.has(v))
-                        openSet.add(v)
-                }
-            }
-        }
-    }
-
-    const reconstructPath = (parents: Tile[], current: Tile): Tile[] => {
-        const totalPath = [current]
-        while (parents[current.row * COLS + current.col] != null) {
-            current = parents[current.row * COLS + current.col]
-            totalPath.unshift(current)
-        }
-        return totalPath
-    }
-
     const _bfs = (): void => {
         const srcRow = src.row
         const srcCol = src.col
         const destRow = dest.row
         const destCol = dest.col
 
-        const queue: Tile[] = [_matrix[srcRow][srcCol]]
-
+        const queue: Tile[] = [new Tile(TileState.UNVISITED, srcRow, srcCol)]
         while (queue.length > 0) {
-            const u = queue.shift()!
+            const u = dequeue(queue, _distances)
             if (u.isWall) continue
             const neighbors = getNeighbors(u.row, u.col, _matrix)
             for (let i = 0; i < neighbors.length; i++) {
                 const v = neighbors[i]
-                if (v.isWall) continue
-                if (!isVisited(_visitedSet, v)) {
-                    _visitedSet.push(v)
-                    _parents[v.row * COLS + v.col] = u
-                    if (v.row === destRow && v.col === destCol) {
-                        _getShortestPathSequence()
-                        return
-                    }
-                    queue.push(v)
+                if (isVisited(_visitedSet, v) || _matrix[v.row][v.col].isWall) continue
+                _parents[v.row * COLS + v.col] = u
+
+                if (v.row === destRow && v.col === destCol) {
+                    _getShortestPathSequence()
+                    return
                 }
+                queue.push(v)
+                if (!isVisited(_visitedSet, v))
+                    _visitedSet.push(v)
+
             }
         }
         _getShortestPathSequence()
@@ -315,16 +265,47 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
             items.push(<MenuItem key={Math.random()} className='flex items-center hover:font-bold' onClick={() => {
                 setAlgo(_algo)
             }}>
-                <>{_algo == algo ? <BiCheck className='text-xl' /> : null}</>
+                <>{_algo == algo ? <BiCheck className='text-xl text-green-600' /> : null}</>
                 <>{_algo}</></MenuItem>)
         }
         return items
+    }
+
+    const algorithmDescription = (): JSX.Element => {
+        let description
+        let editing
+        if (algo === Algo.DIJKSTRA) {
+            description = <p>
+                <span className='font-bold text-green-500'>Dijkstra&apos;s</span> Algorithm is weighted, and guaranteed to find the shortest path.
+                It will avoid <span className='font-bold text-orange-600'>traffic jams</span> when possible.</p>
+        }
+        else if (algo === Algo.GENERIC_BFS) {
+            description = <p><span className='font-bold text-green-500'>Breadth-First Search (BFS)</span> is unweighted, and not guaranteed to find the shortest path.</p>
+        }
+        else if (algo === Algo.GENERIC_DFS) {
+            description = <p><span className='font-bold text-green-500'>Depth-First Search (DFS)</span> unweighted, and not guaranteed to find the shortest path.</p>
+        }
+
+        if (isEditingSrc) {
+            editing = <p>Click on a tile to place the <span className='font-bold text-blue-400'>source</span></p>
+        }
+        else if (isEditingDest) {
+            editing = <p>Click on a tile to place the <span className='font-bold text-red-500'>destination</span></p>
+        }
+        else if (isAddingTrafficJam) {
+            editing = <p>Click on a tile to add or remove a <span className='font-bold text-orange-600'>traffic jam</span></p>
+        }
+        else {
+            editing = null
+        }
+        return <Box className='flex justify-between w-full'><Box className='mr-auto'>{description}</Box><Box className='ml-auto'>{editing}</Box></Box>
     }
 
     const handleSrcEditClick = () => {
         if (!isEditingSrc) {
             setIsEditingSrc(true)
             setIsEditingDest(false)
+            setIsAddingTrafficJam(false)
         }
         else {
             setIsEditingSrc(false)
@@ -335,37 +316,49 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         if (!isEditingDest) {
             setIsEditingDest(true)
             setIsEditingSrc(false)
+            setIsAddingTrafficJam(false)
         }
         else {
             setIsEditingDest(false)
         }
     }
 
-    // _temporaryWeightedEdges()
+    const handleTrafficEditClick = () => {
+        if (!isAddingTrafficJam) {
+            setIsAddingTrafficJam(s => !s)
+            setIsEditingSrc(false)
+            setIsEditingDest(false)
+        }
+        else {
+            setIsAddingTrafficJam(false)
+        }
+    }
+
     return <Box className='flex flex-col justify-center'>
-        <Box className='flex gap-6 items-center justify-start mx-20 mb-5'>
+        <Box className='flex gap-6 items-center justify-start mx-40 mb-5'>
             <Box className='flex gap-6'>
                 <Menu>
-                    <MenuButton as={Button} rightIcon={<BiChevronDown />} variant='outline'>
+                    <MenuButton as={Button} rightIcon={<BiChevronDown />} variant='outline' className='bg-gray-200 text-black hover:text-white'>
                         Selected: {algo}
                     </MenuButton>
                     <MenuList bg='black'>
                         {menuItems()}
                     </MenuList>
                 </Menu>
-                <Menu>
-                    <MenuButton as={Button} rightIcon={<BiChevronDown />} variant='outline'>
-                        Wall Patterns
-                    </MenuButton>
-                    <MenuList bg='black'>
-                        {menuItems()}
-                    </MenuList>
-                </Menu>
-                <Button onClick={_pathVisualizer} variant='outline' className='bg-purple-600'>Visualize Algorithm</Button>
-                <Button onClick={() => setReset(true)} variant='solid'>Reset Board</Button>
+
+                <Button onClick={() => { }} variant='outline' className='flex gap-2'> <FaCogs className='text-lg text-green-600' /> Configure Simulation</Button>
+                <Button onClick={_pathVisualizer} variant='outline' className='flex gap-2'><PiPathBold className='text-lg text-purple-600' />Visualize Algorithm</Button>
+                <Button onClick={() => setReset(true)} variant='outline' className='flex gap-2'><MdOutlineReplay className='text lg text-red-400' /> Reset Board</Button>
 
             </Box>
             <Box className='flex ml-auto gap-6 items-center'>
+                <Tooltip label='Add Traffic Jam' aria-label='Add Traffic Jam'>
+                    <Button onClick={handleTrafficEditClick}
+                        className={`flex gap-3 ${isAddingTrafficJam ? 'bg-orange-600' : ''}`}
+                        variant='outline'>
+                        <AiOutlinePlus /><FaTrafficLight />
+                    </Button>
+                </Tooltip>
                 <Tooltip label='Move Source' aria-label='Move Source Node'>
                     <Button onClick={handleSrcEditClick}
                         className={`flex gap-3 ${isEditingSrc ? 'bg-blue-600' : ''}`}
@@ -378,18 +371,25 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
                 </Tooltip>
             </Box>
         </Box>
+        <Box className='flex mx-20 mb-2'>
+            {algorithmDescription()}
+        </Box>
         <Grid templateColumns={`repeat(${COLS}, 1fr)`} className='mx-auto'>
             {_matrix.map((tileRow) => tileRow.map((tile) => <GridTile key={Math.random()}
                 src={src}
                 setSrc={setSrc}
                 isEditingSrc={isEditingSrc}
-                setIsEditingSrc={setIsEditingSrc}
                 dest={dest}
                 setDest={setDest}
                 isEditingDest={isEditingDest}
-                setIsEditingDest={setIsEditingDest}
+                trafficJams={trafficJams}
+                setTrafficJams={setTrafficJams}
+                isAddingTrafficJam={isAddingTrafficJam}
                 matrix={_matrix}
                 isShiftKeyPressed={isShiftKeyPressed}
+                setIsEditingSrc={setIsEditingSrc}
+                setIsEditingDest={setIsEditingDest}
+                setIsAddingTrafficJam={setIsAddingTrafficJam}
                 tile={tile} />))}
         </Grid>
     </Box>

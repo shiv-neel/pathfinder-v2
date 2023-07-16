@@ -3,16 +3,22 @@ import { useEffect, useState } from 'react'
 import { World } from './World'
 import { FiMove } from 'react-icons/fi'
 import { BsCarFrontFill, BsShiftFill } from 'react-icons/bs'
-import { FaMapMarkerAlt, FaMousePointer } from 'react-icons/fa'
+import { FaCogs, FaMapMarkerAlt, FaMousePointer, FaTrafficLight } from 'react-icons/fa'
 import { Algo } from '../models/types'
-import { BiCheck, BiChevronDown, BiPlus, BiPointer } from 'react-icons/bi'
+import { BiCheck, BiChevronDown, BiPlus } from 'react-icons/bi'
+import { LiaHandPointerSolid } from 'react-icons/lia'
+
+import '../public/maze_demo.gif'
+// import '../public/add_walls.gif'
+
+import { AiOutlinePlus } from 'react-icons/ai'
 
 const WelcomeModal = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [page, setPage] = useState<number>(0)
 
-    const headers = ['Pathfinding Visualizer', 'Source and Destination Nodes', 'Draw Walls', 'Select Algorithm and Wall Patterns']
-    const pages = [<WelcomeContent />, <SetSrcDestLocationContent />, <DrawWallsContent />, <AlgorithmWallsSelectorContent />]
+    const headers = ['Pathfinding Visualizer', 'Draw Walls', 'Edit Node Locations', 'Select Algorithm and Settings', 'Simulation Controls']
+    const pages = [<WelcomeContent />, <DrawWallsContent />, <SetSrcDestLocationContent />, <AlgorithmWallsSelectorContent />, <SimulationControls />]
 
     useEffect(() => {
         onOpen()
@@ -50,35 +56,52 @@ const WelcomeContent = () => {
     return <Box>
         <Box className='text-sm leading-relaxed'>
             Welcome to Pathfinding Visualizer! This application simulates shortest path discovery for different graph algorithms,
-            such as BFS, DFS, Dijkstra&apos;s, A*, and more.
+            such as BFS, DFS, and Dijkstra&apos;s.
         </Box>
         <Box className='flex justify-center items-center mt-10'>
-            TODO insert a gif of pathfinding
+
+            <img src='/maze_demo.gif' />
         </Box>
     </Box>
 }
 
 const SetSrcDestLocationContent = () => {
     return <Box>
-        <Box className='text-sm leading-relaxed'>
-            To specify the location of the source and destination nodes, click
-            the respective <strong>Move Source</strong> and <strong>Move Destination </strong> buttons
-            on the right-hand side of the toolbar, and then select the desired cell on the map.
-            <br></br><br></br>
+        <Box className='text-sm mb-5'>
+            Use the following controls from the right-hand side of the toolbar.
+        </Box>
+        <Box>
 
         </Box>
         <Box className='flex justify-center items-center'>
-            <Box className='flex gap-6 items-center'>
-                <Tooltip label='Move Source' aria-label='Move Source Node'>
-                    <Button
-                        className={`flex gap-3 bg-black`}
-                        variant='outline'>
-                        <FiMove /><BsCarFrontFill />
-                    </Button>
-                </Tooltip>
-                <Tooltip label='Move Destination' aria-label='Move Destination'>
-                    <Button className={`flex gap-3 bg-black`} variant='outline'><FiMove /><FaMapMarkerAlt /></Button>
-                </Tooltip>
+            <Box className='flex flex-col gap-6 items-center'>
+                <Box className='flex items-center gap-6'>
+                    Move Source<Tooltip label='Move Source' aria-label='Move Source Node'>
+                        <Button
+                            className='flex gap-3 bg-black'
+                            variant='outline'>
+                            <FiMove /><BsCarFrontFill />
+                        </Button>
+                    </Tooltip>
+                </Box>
+                <Box className='flex items-center gap-6'>
+                    Move Destination<Tooltip label='Move Destination' aria-label='Move Destination Node'>
+                        <Button
+                            className='flex gap-3 bg-black'
+                            variant='outline'>
+                            <FiMove /><FaMapMarkerAlt />
+                        </Button>
+                    </Tooltip>
+                </Box>
+                <Box className='flex items-center gap-6'>
+                    Add Traffic Jams (Weighted Edges)<Tooltip label='Add Traffic Jams' aria-label='Add Traffic Jams'>
+                        <Button
+                            className='flex gap-3 bg-black'
+                            variant='outline'>
+                            <AiOutlinePlus /><FaTrafficLight />
+                        </Button>
+                    </Tooltip>
+                </Box>
             </Box>
         </Box>
     </Box>
@@ -87,14 +110,14 @@ const SetSrcDestLocationContent = () => {
 const DrawWallsContent = () => {
 
     const shiftKey = <Box className='flex justify-center items-center gap-3 rounded-md hover:cursor-pointer text-lg
-    p-3 text-black bg-white w-32 shadow-md my-5'><BsShiftFill /> Shift</Box>
-    const iconGroup = <Box className='flex justify-center items-center mx-auto gap-1 text-lg'>{shiftKey}<BiPlus /> <FaMousePointer className='text-2xl' /></Box>
+    p-3 text-black bg-white w-32 shadow-xl my-5'><BsShiftFill /> Shift</Box>
+    const iconGroup = <Box className='flex justify-center items-center mx-auto gap-1 text-lg'>{shiftKey}<BiPlus /> <LiaHandPointerSolid className='text-2xl' /></Box>
     return <Box>
         <Box className='text-sm'>To draw walls, hold down the shift key, and hover over the cells you wish to toggle walls.
             {iconGroup}
         </Box>
         <Box className='flex justify-center items-center mt-10'>
-            TODO insert gif of drawing walls here
+            <img src='/add_walls.gif' />
         </Box>
     </Box>
 }
@@ -105,7 +128,7 @@ const AlgorithmWallsSelectorContent = () => {
     const algoMenuItems = (): JSX.Element[] => {
         const items: JSX.Element[] = []
         for (const _algo of Object.values(Algo)) {
-            items.push(<MenuItem key={Math.random()} className='flex items-center hover:font-bold'><>{_algo == algo ? <BiCheck className='text-xl' /> : null}</>
+            items.push(<MenuItem onClick={() => setAlgo(_algo)} key={Math.random()} className='flex items-center hover:font-bold'><>{_algo == algo ? <BiCheck className='text-xl text-green-600' /> : null}</>
                 <>{_algo}</></MenuItem>)
         }
         return items
@@ -126,17 +149,27 @@ const AlgorithmWallsSelectorContent = () => {
             </Menu>
         </Box>
         <Box className='text-sm leading-relaxed mt-5'>
-            If desired, select a wall configuration preset.
+            For all other settings, click the <strong>Configure Simulation</strong> button.
         </Box>
         <Box className='flex justify-center items-center mt-2'>
-            <Menu>
-                <MenuButton as={Button} rightIcon={<BiChevronDown />} className='bg-gray-200 text-black hover:text-white' variant='outline'>
-                    Selected: {algo}
-                </MenuButton>
-                <MenuList bg={'black'}>
-                    {algoMenuItems()}
-                </MenuList>
-            </Menu>
+            <Button onClick={() => { }} variant='outline' className='flex gap-2'>
+                <FaCogs className='text-lg' /> Configure Simulation</Button>
+        </Box>
+    </Box>
+}
+
+
+const SimulationControls = () => {
+    return <Box>
+        <Box className='text-sm leading-relaxed'>
+            Select the algorithm to visualize using the selector in the top left menu of the toolbar.
+        </Box>
+        <Box className='text-sm leading-relaxed mt-5'>
+            For all other settings, click the <strong>Configure Simulation</strong> button.
+        </Box>
+        <Box className='flex justify-center items-center mt-2'>
+            <Button onClick={() => { }} variant='outline' className='flex gap-2'>
+                <FaCogs className='text-lg' /> Configure Simulation</Button>
         </Box>
     </Box>
 }

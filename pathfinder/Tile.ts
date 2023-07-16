@@ -3,6 +3,7 @@ import { WALL_COST } from './main'
 export enum TileState {
     SRC,
     DEST,
+    TRAFFIC,
     UNVISITED,
     VISITED,
     PATH

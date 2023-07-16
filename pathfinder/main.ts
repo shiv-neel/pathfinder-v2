@@ -11,7 +11,7 @@ export const INITIAL_DEST_COL = COLS * 0.9
  
 export const EMPTY_COST = 5
 export const WALL_COST = Infinity
-export const BOMB_COST = 10
+export const TRAFFIC_COST = 20
 export const DEST_COST = 20
 
 export const INITIAL_MATRIX_STATE: Tile[][] = []
@@ -55,25 +55,3 @@ export const dequeue = (queue: Tile[], distances: number[][]): Tile => {
     queue.sort((a, b) => distances[a.row][a.col] - distances[b.row][b.col])
     return queue.shift()!
 }
-
-export const heuristic = (t1: Tile, t2: Tile): number => {
-    return getManhattanDistance(t1, t2)
-}
-
-const getManhattanDistance = (t1: Tile, t2: Tile): number => {
-    return Math.abs(t1.row - t2.row) + Math.abs(t1.col - t2.col)
-}
-
-export const findKeyWithSmallestValue = (map: Map<Tile, number>): any | undefined => {
-    let smallestValue = Infinity
-    let smallestKey: any
-  
-    map.forEach((value, key) => {
-        if (value < smallestValue) {
-          smallestValue = value
-          smallestKey = key
-        }
-      })
-  
-    return smallestKey
-  }
