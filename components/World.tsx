@@ -344,7 +344,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
 
                 <Button onClick={onOpen} variant='outline' className='flex gap-2'> <FaCogs className='text-lg text-green-600' /> Configure Simulation</Button>
                 <Button onClick={_pathVisualizer} variant='outline' className='flex gap-2'>
-                    <PiPathBold className='text-lg text-purple-600' />Visualize Algorithm
+                    <PiPathBold className='text-lg text-purple-600' />Visualize Algorithm!
                 </Button>
                 <SettingsModal isOpen={isOpen} onOpen={onOpen} onClose={onClose}
                     animationSpeed={animationSpeed} setAnimationSpeed={setAnimationSpeed}
