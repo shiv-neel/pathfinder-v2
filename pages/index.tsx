@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { Box, Button, Heading, useColorMode } from '@chakra-ui/react'
+import { Box, Button, Heading, useColorMode, useDisclosure } from '@chakra-ui/react'
 import { Toolbar } from '../components/Toolbar'
 import { World } from '../components/World'
 import { useEffect, useState } from 'react'
@@ -14,6 +14,7 @@ import { COLS } from '../pathfinder/main'
 const Home: NextPage = () => {
   const [isShiftKeyPressed, setIsShiftKeyPressed] = useState(false)
 
+  const { isOpen, onOpen, onClose } = useDisclosure()
   const { colorMode, toggleColorMode } = useColorMode()
 
   useEffect(() => {
@@ -46,10 +47,10 @@ const Home: NextPage = () => {
   return (
     <Box className='flex flex-col min-h-screen mx-auto' backgroundColor={'#1e1e1e'}>
       <Box>
-        <Toolbar />
+        <Toolbar onOpen={onOpen} />
       </Box>
       <World isShiftKeyPressed={isShiftKeyPressed} />
-      <WelcomeModal />
+      <WelcomeModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
       <Footer />
     </Box>
   )

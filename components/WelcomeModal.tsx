@@ -16,12 +16,17 @@ import { PiPathBold } from 'react-icons/pi'
 import { MdOutlineReplay } from 'react-icons/md'
 import Image from 'next/image'
 
-const WelcomeModal = () => {
-    const { isOpen, onOpen, onClose } = useDisclosure()
+interface WelcomeModalProps {
+    isOpen: boolean
+    onOpen: () => void
+    onClose: () => void
+}
+
+const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onOpen, onClose }) => {
     const [page, setPage] = useState<number>(0)
 
-    const headers = ['Pathfinding Visualizer', 'Draw Walls', 'Edit vertex Locations', 'Select Algorithm and Settings', 'Simulation Controls']
-    const pages = [<WelcomeContent key={1} />, <DrawWallsContent key={2} />, <SetSrcDestLocationContent key={3} />, <AlgorithmWallsSelectorContent key={4} />, <SimulationControls key={5} />]
+    const headers = ['Pathfinding Visualizer', 'Draw Walls', 'Edit Vertex Locations', 'Add Weighted Edges', 'Select Algorithm and Settings', 'Simulation Controls']
+    const pages = [<WelcomeContent key={1} />, <DrawWallsContent key={2} />, <SetSrcDestLocationContent key={3} />, <WeightedEdges key={4} />, <AlgorithmWallsSelectorContent key={5} />, <SimulationControls key={6} />]
 
     useEffect(() => {
         onOpen()
@@ -111,7 +116,6 @@ const SetSrcDestLocationContent = () => {
 }
 
 const DrawWallsContent = () => {
-
     const shiftKey = <Box className='flex justify-center items-center gap-3 rounded-md hover:cursor-pointer text-lg
     p-3 text-black bg-white w-32 shadow-xl my-5'><BsShiftFill /> Shift</Box>
     const iconGroup = <Box className='flex justify-center items-center mx-auto gap-1 text-lg'>{shiftKey}<BiPlus /> <LiaHandPointerSolid className='text-2xl' /></Box>
@@ -121,6 +125,19 @@ const DrawWallsContent = () => {
         </Box>
         <Box className='flex justify-center items-center mt-10'>
             <Image src='/add_walls.gif' alt='' width={400} height={300} />
+        </Box>
+    </Box>
+}
+
+const WeightedEdges = () => {
+
+    return <Box>
+        <Box className='text-sm leading-relaxed'>
+            After clicking the <em>Add Weight Edges</em> button, you can add weighted edges, and edit the weight in the <em>Configure Simulation</em> menu.
+        </Box>
+        <Box className='flex justify-center items-center mt-10'>
+
+            <Image src='/traffic_jams.gif' alt='' width={400} height={300} />
         </Box>
     </Box>
 }

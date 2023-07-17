@@ -4,15 +4,19 @@ import { Dispatch, SetStateAction, useContext } from 'react'
 import { destinationVertexIcon, shortestPathIcon, sourceVertexIcon, trafficJamIcon, visitedNodeIcon, wallIcon } from '../constants/icons'
 import { FaPlus } from 'react-icons/fa'
 import { PiGraphFill } from 'react-icons/pi'
+import { BiSolidHelpCircle } from 'react-icons/bi'
 
-interface ToolbarProps { }
+interface ToolbarProps {
+    onOpen: () => void
+}
 
-export const Toolbar: React.FC<ToolbarProps> = ({ }) => {
+export const Toolbar: React.FC<ToolbarProps> = ({ onOpen }) => {
 
     return <Box className='flex items-center px-20 py-5 mb-5 mt-5'>
         <Box className='flex items-center gap-3'>
             <PiGraphFill className='text-5xl text-purple-600' />
             <Heading as='h1'>Pathfinding Visualizer</Heading>
+            <BiSolidHelpCircle className='text-3xl text-gray-500 cursor-pointer hover:scale-150 duration-100' onClick={onOpen} />
         </Box>
         <Box className='flex justify-start flex-col ml-auto'>
             <Box className='flex gap-10'>
@@ -27,7 +31,7 @@ export const Toolbar: React.FC<ToolbarProps> = ({ }) => {
     </Box>
 }
 
-interface LegendButtonProps extends ToolbarProps {
+interface LegendButtonProps {
     icon?: JSX.Element
     text: string
     state: TileState
