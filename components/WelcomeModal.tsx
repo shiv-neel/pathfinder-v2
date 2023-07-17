@@ -14,17 +14,18 @@ import '../public/maze_demo.gif'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { PiPathBold } from 'react-icons/pi'
 import { MdOutlineReplay } from 'react-icons/md'
+import Image from 'next/image'
 
 const WelcomeModal = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [page, setPage] = useState<number>(0)
 
     const headers = ['Pathfinding Visualizer', 'Draw Walls', 'Edit vertex Locations', 'Select Algorithm and Settings', 'Simulation Controls']
-    const pages = [<WelcomeContent />, <DrawWallsContent />, <SetSrcDestLocationContent />, <AlgorithmWallsSelectorContent />, <SimulationControls />]
+    const pages = [<WelcomeContent key={1} />, <DrawWallsContent key={2} />, <SetSrcDestLocationContent key={3} />, <AlgorithmWallsSelectorContent key={4} />, <SimulationControls key={5} />]
 
     useEffect(() => {
         onOpen()
-    }, [])
+    })
     return (
         <Modal isOpen={isOpen} onClose={onClose} size={'xl'}>
 
@@ -62,7 +63,7 @@ const WelcomeContent = () => {
         </Box>
         <Box className='flex justify-center items-center mt-10'>
 
-            <img src='/maze_demo.gif' />
+            <Image src='/maze_demo.gif' alt='' />
         </Box>
     </Box>
 }
@@ -119,7 +120,7 @@ const DrawWallsContent = () => {
             {iconGroup}
         </Box>
         <Box className='flex justify-center items-center mt-10'>
-            <img src='/add_walls.gif' />
+            <Image src='/add_walls.gif' alt='' />
         </Box>
     </Box>
 }
