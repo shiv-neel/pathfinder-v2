@@ -4,11 +4,11 @@ import { BsSuitHeartFill } from 'react-icons/bs'
 
 const Footer = () => {
     return (
+        // <Link href='https://shivneel.me'>
         <Box className='flex justify-center items-center gap-2 mt-5'>
-            <Link href='https://github.com/shiv-neel'>
-                Made with <BsSuitHeartFill className='text-red-600' /> by Shiv Neelakantan
-            </Link>
+            Made with <BsSuitHeartFill className='text-red-600' /> by Shiv Neelakantan
         </Box>
+        // </Link>
     )
 }
 

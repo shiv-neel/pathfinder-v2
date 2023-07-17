@@ -1,9 +1,10 @@
 import { Box, Button, Divider, Input, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, ModalProps, Slider, SliderFilledTrack, SliderMark, SliderThumb, SliderTrack, useDisclosure } from '@chakra-ui/react'
-import { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { FiMinusCircle, FiPlusCircle } from 'react-icons/fi'
 import { GiRabbit, GiTortoise } from 'react-icons/gi'
 import { RiSpeedUpFill } from 'react-icons/ri'
 import { AnimationSpeed } from '../models/types'
+import { IoInfiniteOutline } from 'react-icons/io5'
 
 interface SettingsModalProps {
     isOpen: boolean
@@ -26,25 +27,25 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onOpen, onClose, 
                         <ModalCloseButton />
                         <ModalBody pb={6}>
                             <Box>
-                                <Box className='text-lg font-semibold mb-2'>Cell Weights</Box>
-                                <Box className='text-sm mb-5 flex flex-col gap-5'>
-                                    <Box>Wall: INFINITY</Box>
-                                    <Box>Empty (Default): 5</Box>
-                                    <Box className='flex items-center gap-2'>Traffic Jams (range [-45, 55]): {edgeWeight}
-                                        <Box className='text-sm flex gap-5 items-center'>
-                                            <GiTortoise className='text-4xl text-green-400' />
-                                            <Slider defaultValue={animationSpeed} min={AnimationSpeed.SLOWEST} max={AnimationSpeed.FASTEST} onChange={(val) => setAnimationSpeed(val)} step={1}>
-                                                <SliderTrack>
-                                                    <SliderFilledTrack />
-                                                </SliderTrack>
-                                                <SliderThumb />
-                                            </Slider>
-                                            <GiRabbit className='text-4xl text-pink-400' />
-                                        </Box>
-                                    </Box>
-
+                                <Box className='text-lg font-semibold mb-2'>Cell Weights for Dijkstra&apos;s</Box>
+                                <Box className='text-sm mb-5 flex flex-col gap-2'>
+                                    <Box className='flex gap-2 items-center'>Wall: <IoInfiniteOutline className='text-xl' /></Box>
+                                    <Box>Empty: 5</Box>
+                                    <Box className='flex gap-5'>Traffic Jam: {edgeWeight} <p className='underline cursor-pointer text-purple-400' onClick={() => setEdgeWeight(20)}>Reset to Default</p></Box>
                                 </Box>
-                                <Divider />
+                                <Box>
+                                    <Box className='text-lg font-semibold mb-2 mt-5'>Traffic Jam Weight [ -45, +55 ] </Box>
+                                    <Box className='text-sm flex gap-5 items-center'>
+                                        -45
+                                        <Slider value={edgeWeight} defaultValue={edgeWeight} min={-45} max={55} onChange={(val) => setEdgeWeight(val)} step={1}>
+                                            <SliderTrack>
+                                                <SliderFilledTrack />
+                                            </SliderTrack>
+                                            <SliderThumb />
+                                        </Slider>
+                                        +55
+                                    </Box>
+                                </Box>
                                 <Box>
                                     <Box className='text-lg font-semibold mb-2 mt-5'>Animation Speed</Box>
                                     <Box className='text-sm flex gap-5 items-center'>
