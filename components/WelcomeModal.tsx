@@ -9,7 +9,7 @@ import { BiCheck, BiChevronDown, BiPlus } from 'react-icons/bi'
 import { LiaHandPointerSolid } from 'react-icons/lia'
 
 import '../public/maze_demo.gif'
-// import '../public/add_walls.gif'
+import '../public/add_walls.gif'
 
 import { AiOutlinePlus } from 'react-icons/ai'
 import { PiPathBold } from 'react-icons/pi'
@@ -25,7 +25,7 @@ const WelcomeModal = () => {
 
     useEffect(() => {
         onOpen()
-    })
+    }, [])
     return (
         <Modal isOpen={isOpen} onClose={onClose} size={'xl'}>
 
@@ -63,7 +63,7 @@ const WelcomeContent = () => {
         </Box>
         <Box className='flex justify-center items-center mt-10'>
 
-            <Image src='/maze_demo.gif' alt='' />
+            <Image src='/maze_demo.gif' alt='' width={400} height={300} />
         </Box>
     </Box>
 }
@@ -120,7 +120,7 @@ const DrawWallsContent = () => {
             {iconGroup}
         </Box>
         <Box className='flex justify-center items-center mt-10'>
-            <Image src='/add_walls.gif' alt='' />
+            <Image src='/add_walls.gif' alt='' width={400} height={300} />
         </Box>
     </Box>
 }

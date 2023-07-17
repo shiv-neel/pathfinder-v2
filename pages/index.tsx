@@ -1,5 +1,5 @@
 import type { NextPage } from 'next'
-import { Box, Button, Heading } from '@chakra-ui/react'
+import { Box, Button, Heading, useColorMode } from '@chakra-ui/react'
 import { Toolbar } from '../components/Toolbar'
 import { World } from '../components/World'
 import { useEffect, useState } from 'react'
@@ -13,6 +13,13 @@ import { COLS } from '../pathfinder/main'
 
 const Home: NextPage = () => {
   const [isShiftKeyPressed, setIsShiftKeyPressed] = useState(false)
+
+  const { colorMode, toggleColorMode } = useColorMode()
+
+  useEffect(() => {
+    if (colorMode === 'light')
+      toggleColorMode()
+  })
 
   const handleKeyDown = (event: KeyboardEvent) => {
     if (event.shiftKey) {
