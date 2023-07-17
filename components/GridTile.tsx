@@ -3,7 +3,7 @@ import { GiBrickWall } from 'react-icons/gi'
 import { Dispatch, SetStateAction, useEffect, useState } from 'react'
 import { Tile, TileState } from '../pathfinder/Tile'
 import { getIconFromState } from '../constants/icons'
-import { TRAFFIC_COST, WALL_COST } from '../pathfinder/main'
+import { WALL_COST } from '../pathfinder/main'
 
 interface GridTileProps {
     tile: Tile
@@ -20,13 +20,14 @@ interface GridTileProps {
     setIsEditingSrc: Dispatch<SetStateAction<boolean>>
     setIsEditingDest: Dispatch<SetStateAction<boolean>>
     setIsAddingTrafficJam: Dispatch<SetStateAction<boolean>>
+    edgeCost: number
     isShiftKeyPressed: boolean
 }
 
 export const GridTile: React.FC<GridTileProps> = ({
     tile, src, setSrc, isEditingSrc,
     dest, setDest, isEditingDest, trafficJams, setTrafficJams, isAddingTrafficJam,
-    matrix, setIsEditingSrc, setIsEditingDest, setIsAddingTrafficJam, isShiftKeyPressed
+    matrix, setIsEditingSrc, setIsEditingDest, setIsAddingTrafficJam, edgeCost, isShiftKeyPressed
 }) => {
     const [isWall, setIsWall] = useState<boolean>(false)
     const className = tile.isWall ? 'node-wall' : ''
@@ -61,12 +62,14 @@ export const GridTile: React.FC<GridTileProps> = ({
             matrix[src.row][src.col].setTileState(TileState.UNVISITED)
             tile.setTileState(TileState.SRC)
             setSrc(tile)
+            setIsEditingSrc(false)
         }
         else if (isEditingDest) {
             if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
             matrix[dest.row][dest.col].setTileState(TileState.UNVISITED)
             tile.setTileState(TileState.DEST)
             setDest(tile)
+            setIsEditingDest(false)
         }
         else if (isAddingTrafficJam) {
             if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
@@ -76,7 +79,7 @@ export const GridTile: React.FC<GridTileProps> = ({
             }
             else {
                 tile.setTileState(TileState.TRAFFIC)
-                tile.dist = TRAFFIC_COST
+                tile.dist = edgeCost
                 setTrafficJams([...trafficJams, tile])
             }
         }

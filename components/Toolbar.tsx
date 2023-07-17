@@ -1,7 +1,7 @@
 import { Box, Button, Heading, Menu, MenuButton, MenuItem, MenuItemOption, MenuList } from '@chakra-ui/react'
 import { TileState } from '../pathfinder/Tile'
 import { Dispatch, SetStateAction, useContext } from 'react'
-import { destinationVertexIcon, shortestPathIcon, sourceVertexIcon, visitedNodeIcon, wallIcon } from '../constants/icons'
+import { destinationVertexIcon, shortestPathIcon, sourceVertexIcon, trafficJamIcon, visitedNodeIcon, wallIcon } from '../constants/icons'
 import { FaPlus } from 'react-icons/fa'
 import { PiGraphFill } from 'react-icons/pi'
 
@@ -16,10 +16,11 @@ export const Toolbar: React.FC<ToolbarProps> = ({ }) => {
         </Box>
         <Box className='flex justify-start flex-col ml-auto'>
             <Box className='flex gap-10'>
-                <LegendButton text={'Source Node'} state={TileState.SRC} icon={sourceVertexIcon} />
-                <LegendButton text={'Destination Node'} state={TileState.DEST} icon={destinationVertexIcon} />
-                <LegendButton text={'Wall Node'} state={TileState.UNVISITED} icon={wallIcon} />
-                <LegendButton text={'Visited Node'} state={TileState.VISITED} icon={visitedNodeIcon} />
+                <LegendButton text={'Source Vertex'} state={TileState.SRC} icon={sourceVertexIcon} />
+                <LegendButton text={'Destination Vertex'} state={TileState.DEST} icon={destinationVertexIcon} />
+                <LegendButton text={'Weighted Edge'} state={TileState.TRAFFIC} icon={trafficJamIcon} />
+                <LegendButton text={'Wall Vertex'} state={TileState.UNVISITED} icon={wallIcon} />
+                <LegendButton text={'Visited Vertex'} state={TileState.VISITED} icon={visitedNodeIcon} />
                 <LegendButton text={'Calculated Shortest Path'} state={TileState.PATH} icon={shortestPathIcon} />
             </Box>
         </Box>
@@ -33,7 +34,7 @@ interface LegendButtonProps extends ToolbarProps {
 }
 
 const LegendButton: React.FC<LegendButtonProps> = ({ icon, text, state }) => {
-    return <Box className='flex items-center gap-2 bottom-0'>
+    return <Box className='flex items-center gap-2 bottom-0 text-sm'>
         {icon}
         {text}
     </Box>

@@ -1,16 +1,17 @@
 import React, { use, useContext, useEffect, useState } from 'react'
-import { Box, Button, Grid, Menu, MenuButton, MenuItem, MenuList, Tooltip } from '@chakra-ui/react'
+import { Box, Button, Grid, Menu, MenuButton, MenuItem, MenuList, Tooltip, useDisclosure } from '@chakra-ui/react'
 import { Tile, TileState } from '../pathfinder/Tile'
 import { GridTile } from './GridTile'
-import { TRAFFIC_COST, COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, dequeue, getNeighbors, isVisited } from '../pathfinder/main'
+import { COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, dequeue, getNeighbors, isVisited, speedNormalizer } from '../pathfinder/main'
 import { BiCheck, BiChevronDown } from 'react-icons/bi'
-import { Algo } from '../models/types'
+import { Algo, AnimationSpeed } from '../models/types'
 import { FiMove } from 'react-icons/fi'
 import { BsCarFrontFill } from 'react-icons/bs'
 import { FaGrinTears, FaMapMarkerAlt, FaTrafficLight, FaCogs } from 'react-icons/fa'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { PiPathBold } from 'react-icons/pi'
 import { MdOutlineReplay } from 'react-icons/md'
+import SettingsModal from './SettingsModal'
 
 interface WorldProps {
     isShiftKeyPressed: boolean
@@ -34,6 +35,10 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
     const [isEditingSrc, setIsEditingSrc] = useState<boolean>(false)
     const [isEditingDest, setIsEditingDest] = useState<boolean>(false)
     const [isAddingTrafficJam, setIsAddingTrafficJam] = useState<boolean>(false)
+
+    const [edgeWeight, setEdgeWeight] = useState<number>(20)
+    const [animationSpeed, setAnimationSpeed] = useState<AnimationSpeed>(AnimationSpeed.MEDIUM)
+    const { isOpen, onOpen, onClose } = useDisclosure()
 
     _matrix[src.row][src.col].setTileState(TileState.SRC)
     _matrix[dest.row][dest.col].setTileState(TileState.DEST)
@@ -209,13 +214,14 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
 
 
     const _animateVisits = (sequence: Tile[]) => {
+
         for (let i = 0; i <= _visitedSet.length; i++) {
             if (i === _visitedSet.length || _visitedSet[i].row === dest.row && _visitedSet[i].col === dest.col) {
                 setTimeout(() => {
                     _animateShortestPath(sequence)
-                }, 10 * i)
+                }, speedNormalizer[animationSpeed] * i)
                 setTimeout(() => {
-                }, 10 * i)
+                }, speedNormalizer[animationSpeed] * i)
                 return
             }
             setTimeout(() => {
@@ -226,7 +232,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
                     document.getElementById(`node-${node.row}-${node.col}`)!.className =
 
                         'node node-visited'
-            }, 10 * i)
+            }, speedNormalizer[animationSpeed] * i)
         }
     }
 
@@ -236,21 +242,8 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
                 const node = sequence[i]
                 document.getElementById(`node-${node.row}-${node.col}`)!.className =
                     'node node-shortest-path'
-            }, 50 * i)
+            }, (speedNormalizer[animationSpeed]) * i)
         }
-    }
-
-    const _temporaryWeightedEdges = () => {
-        _setWall(10, 10)
-        _setWall(10, 11)
-        _setWall(10, 12)
-        _setWall(10, 13)
-        _setWall(11, 13)
-        _setWall(12, 13)
-        _setWall(13, 13)
-        _setWall(14, 13)
-        _setWall(15, 13)
-        _setWall(15, 12)
     }
 
     const _setWall = (row: number, col: number) => {
@@ -271,7 +264,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         return items
     }
 
-    const algorithmDescription = (): JSX.Element => {
+    const description = (): JSX.Element => {
         let description
         let editing
         if (algo === Algo.DIJKSTRA) {
@@ -286,11 +279,14 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
             description = <p><span className='font-bold text-green-500'>Depth-First Search (DFS)</span> unweighted, and not guaranteed to find the shortest path.</p>
         }
 
-        if (isEditingSrc) {
-            editing = <p>Click on a tile to place the <span className='font-bold text-blue-400'>source</span></p>
+        if (isShiftKeyPressed) {
+            editing = <p>Hover over tile to create or delete <span className='font-bold text-gray-200'>walls</span></p>
+        }
+        else if (isEditingSrc) {
+            editing = <p>Click on a tile to edit the <span className='font-bold text-blue-400'>source</span></p>
         }
         else if (isEditingDest) {
-            editing = <p>Click on a tile to place the <span className='font-bold text-red-500'>destination</span></p>
+            editing = <p>Click on a tile to edit the <span className='font-bold text-red-500'>destination</span></p>
         }
         else if (isAddingTrafficJam) {
             editing = <p>Click on a tile to add or remove a <span className='font-bold text-orange-600'>traffic jam</span></p>
@@ -346,8 +342,13 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
                     </MenuList>
                 </Menu>
 
-                <Button onClick={() => { }} variant='outline' className='flex gap-2'> <FaCogs className='text-lg text-green-600' /> Configure Simulation</Button>
-                <Button onClick={_pathVisualizer} variant='outline' className='flex gap-2'><PiPathBold className='text-lg text-purple-600' />Visualize Algorithm</Button>
+                <Button onClick={onOpen} variant='outline' className='flex gap-2'> <FaCogs className='text-lg text-green-600' /> Configure Simulation</Button>
+                <Button onClick={_pathVisualizer} variant='outline' className='flex gap-2'>
+                    <PiPathBold className='text-lg text-purple-600' />Visualize Algorithm
+                </Button>
+                <SettingsModal isOpen={isOpen} onOpen={onOpen} onClose={onClose}
+                    animationSpeed={animationSpeed} setAnimationSpeed={setAnimationSpeed}
+                    edgeWeight={edgeWeight} setEdgeWeight={setEdgeWeight} />
                 <Button onClick={() => setReset(true)} variant='outline' className='flex gap-2'><MdOutlineReplay className='text lg text-red-400' /> Reset Board</Button>
 
             </Box>
@@ -359,20 +360,20 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
                         <AiOutlinePlus /><FaTrafficLight />
                     </Button>
                 </Tooltip>
-                <Tooltip label='Move Source' aria-label='Move Source Node'>
+                <Tooltip label='Move Source' aria-label='Move Source Vertex'>
                     <Button onClick={handleSrcEditClick}
                         className={`flex gap-3 ${isEditingSrc ? 'bg-blue-600' : ''}`}
                         variant='outline'>
                         <FiMove /><BsCarFrontFill />
                     </Button>
                 </Tooltip>
-                <Tooltip label='Move Destination' aria-label='Move Destination'>
+                <Tooltip label='Move Destination' aria-label='Move Destination Vertex'>
                     <Button onClick={handleDestEditClick} className={`flex gap-3 ${isEditingDest ? 'bg-red-600' : ''}`} variant='outline'><FiMove /><FaMapMarkerAlt /></Button>
                 </Tooltip>
             </Box>
         </Box>
         <Box className='flex mx-20 mb-2'>
-            {algorithmDescription()}
+            {description()}
         </Box>
         <Grid templateColumns={`repeat(${COLS}, 1fr)`} className='mx-auto'>
             {_matrix.map((tileRow) => tileRow.map((tile) => <GridTile key={Math.random()}
@@ -390,6 +391,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
                 setIsEditingSrc={setIsEditingSrc}
                 setIsEditingDest={setIsEditingDest}
                 setIsAddingTrafficJam={setIsAddingTrafficJam}
+                edgeCost={edgeWeight}
                 tile={tile} />))}
         </Grid>
     </Box>

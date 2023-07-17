@@ -11,7 +11,6 @@ export const INITIAL_DEST_COL = COLS * 0.9
  
 export const EMPTY_COST = 5
 export const WALL_COST = Infinity
-export const TRAFFIC_COST = 20
 export const DEST_COST = 20
 
 export const INITIAL_MATRIX_STATE: Tile[][] = []
@@ -55,3 +54,5 @@ export const dequeue = (queue: Tile[], distances: number[][]): Tile => {
     queue.sort((a, b) => distances[a.row][a.col] - distances[b.row][b.col])
     return queue.shift()!
 }
+
+export const speedNormalizer = [50, 25, 10, 5, 1]

@@ -12,19 +12,21 @@ import '../public/maze_demo.gif'
 // import '../public/add_walls.gif'
 
 import { AiOutlinePlus } from 'react-icons/ai'
+import { PiPathBold } from 'react-icons/pi'
+import { MdOutlineReplay } from 'react-icons/md'
 
 const WelcomeModal = () => {
     const { isOpen, onOpen, onClose } = useDisclosure()
     const [page, setPage] = useState<number>(0)
 
-    const headers = ['Pathfinding Visualizer', 'Draw Walls', 'Edit Node Locations', 'Select Algorithm and Settings', 'Simulation Controls']
+    const headers = ['Pathfinding Visualizer', 'Draw Walls', 'Edit vertex Locations', 'Select Algorithm and Settings', 'Simulation Controls']
     const pages = [<WelcomeContent />, <DrawWallsContent />, <SetSrcDestLocationContent />, <AlgorithmWallsSelectorContent />, <SimulationControls />]
 
     useEffect(() => {
         onOpen()
     }, [])
     return (
-        <Modal closeOnOverlayClick={false} isOpen={isOpen} onClose={onClose} size={'xl'}>
+        <Modal isOpen={isOpen} onClose={onClose} size={'xl'}>
 
             <ModalOverlay />
             <ModalContent>
@@ -34,8 +36,7 @@ const WelcomeModal = () => {
                     <ModalBody pb={6}>
                         {pages[page]}
                     </ModalBody>
-
-                    <ModalFooter>
+                    <ModalFooter >
                         <Button variant='outline' mr={'auto'} onClick={onClose} colorScheme='black'>
                             Skip Tutorial
                         </Button>
@@ -47,6 +48,7 @@ const WelcomeModal = () => {
                             {page < pages.length - 1 ? 'Next' : 'Close'}</Button>
                         {`(${page + 1}/${pages.length})`}
                     </ModalFooter>
+
                 </Box>
             </ModalContent>
         </Modal>)
@@ -75,8 +77,8 @@ const SetSrcDestLocationContent = () => {
         </Box>
         <Box className='flex justify-center items-center'>
             <Box className='flex flex-col gap-6 items-center'>
-                <Box className='flex items-center gap-6'>
-                    Move Source<Tooltip label='Move Source' aria-label='Move Source Node'>
+                <Box className='flex items-center gap-6 text-sm'>
+                    Move Source Vertex<Tooltip label='Move Source' aria-label='Move Source Vertex'>
                         <Button
                             className='flex gap-3 bg-black'
                             variant='outline'>
@@ -84,8 +86,8 @@ const SetSrcDestLocationContent = () => {
                         </Button>
                     </Tooltip>
                 </Box>
-                <Box className='flex items-center gap-6'>
-                    Move Destination<Tooltip label='Move Destination' aria-label='Move Destination Node'>
+                <Box className='flex items-center gap-6 text-sm'>
+                    Move Destination Vertex<Tooltip label='Move Destination' aria-label='Move Destination Vertex'>
                         <Button
                             className='flex gap-3 bg-black'
                             variant='outline'>
@@ -93,7 +95,7 @@ const SetSrcDestLocationContent = () => {
                         </Button>
                     </Tooltip>
                 </Box>
-                <Box className='flex items-center gap-6'>
+                <Box className='flex items-center gap-6 text-sm'>
                     Add Traffic Jams (Weighted Edges)<Tooltip label='Add Traffic Jams' aria-label='Add Traffic Jams'>
                         <Button
                             className='flex gap-3 bg-black'
@@ -136,9 +138,9 @@ const AlgorithmWallsSelectorContent = () => {
 
     return <Box>
         <Box className='text-sm leading-relaxed'>
-            Select the algorithm to visualize using the selector in the top left menu of the toolbar.
+            Select the algorithm to visualize using the dropdown menu in the toolbar.
         </Box>
-        <Box className='flex justify-center items-center mt-2'>
+        <Box className='flex justify-center items-center mt-5'>
             <Menu>
                 <MenuButton as={Button} rightIcon={<BiChevronDown />} className='bg-gray-200 text-black hover:text-white' variant='outline'>
                     Selected: {algo}
@@ -151,9 +153,9 @@ const AlgorithmWallsSelectorContent = () => {
         <Box className='text-sm leading-relaxed mt-5'>
             For all other settings, click the <strong>Configure Simulation</strong> button.
         </Box>
-        <Box className='flex justify-center items-center mt-2'>
+        <Box className='flex justify-center items-center mt-5'>
             <Button onClick={() => { }} variant='outline' className='flex gap-2'>
-                <FaCogs className='text-lg' /> Configure Simulation</Button>
+                <FaCogs className='text-lg text-green-600' /> Configure Simulation</Button>
         </Box>
     </Box>
 }
@@ -162,14 +164,15 @@ const AlgorithmWallsSelectorContent = () => {
 const SimulationControls = () => {
     return <Box>
         <Box className='text-sm leading-relaxed'>
-            Select the algorithm to visualize using the selector in the top left menu of the toolbar.
+            Use these controls to start and reset the simulation.
         </Box>
-        <Box className='text-sm leading-relaxed mt-5'>
-            For all other settings, click the <strong>Configure Simulation</strong> button.
+        <Box className='flex gap-6 justify-center items-center mt-5'>
+            <Button variant='outline' className='flex gap-2'><PiPathBold className='text-lg text-purple-600' />Visualize Algorithm</Button>
+            <Button variant='outline' className='flex gap-2'><MdOutlineReplay className='text lg text-red-400' /> Reset Board</Button>
         </Box>
-        <Box className='flex justify-center items-center mt-2'>
-            <Button onClick={() => { }} variant='outline' className='flex gap-2'>
-                <FaCogs className='text-lg' /> Configure Simulation</Button>
+        <Box className='text-sm mt-5 italic'>
+            NB: the simulation logic uses CSS keyframes, which do not pair nicely with react state hooks.
+            Thus, resetting <strong>during</strong> the simulation may cause unexpected behavior.
         </Box>
     </Box>
 }
