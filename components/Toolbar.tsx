@@ -9,7 +9,7 @@ interface ToolbarProps { }
 
 export const Toolbar: React.FC<ToolbarProps> = ({ }) => {
 
-    return <Box className='flex items-center px-20 py-5 mb-10 mt-5'>
+    return <Box className='flex items-center px-20 py-5 mb-5 mt-5'>
         <Box className='flex items-center gap-3'>
             <PiGraphFill className='text-5xl text-purple-600' />
             <Heading as='h1'>Pathfinding Visualizer</Heading>
