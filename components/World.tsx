@@ -2,7 +2,7 @@ import React, { use, useContext, useEffect, useState } from 'react'
 import { Box, Button, Grid, Menu, MenuButton, MenuItem, MenuList, Tooltip, useDisclosure } from '@chakra-ui/react'
 import { Tile, TileState } from '../pathfinder/Tile'
 import { GridTile } from './GridTile'
-import { COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, dequeue, getNeighbors, isVisited, speedNormalizer } from '../pathfinder/main'
+import { COLS, EMPTY_COST, ROWS, WALL_COST, dequeue, getNeighbors, isVisited, speedNormalizer } from '../pathfinder/main'
 import { BiCheck, BiChevronDown } from 'react-icons/bi'
 import { Algo, AnimationSpeed } from '../models/types'
 import { FiMove } from 'react-icons/fi'
@@ -15,14 +15,35 @@ import SettingsModal from './SettingsModal'
 
 interface WorldProps {
     isShiftKeyPressed: boolean
+    windowWidth: number
+    windowHeight: number
 }
 
+const initialMatrixState = (rows: number, cols: number): Tile[][] => {
+    const matrix: Tile[][] = []
+    for (let j = 0; j < ROWS; j++) {
+        const row: Tile[] = []
+        for (let i = 0; i < COLS; i++) {
+            row.push(new Tile(TileState.UNVISITED, j, i, EMPTY_COST))
+        }
+        matrix.push(row)
+    }
+    return matrix
+}
 
+export const World: React.FC<WorldProps> = ({ isShiftKeyPressed, windowWidth, windowHeight }) => {
+    const [cols, setCols] = useState<number>(COLS)
+    const [rows, setRows] = useState<number>(ROWS)
 
-export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
-    var _distances: number[][] = Array(ROWS).fill(null).map(() => Array(COLS).fill(1000))
+    useEffect(() => {
+        setCols(Math.floor(windowWidth / 28))
+        // setRows(Math.floor(windowHeight / 28))
+        setRows(3)
+    }, [windowWidth, windowHeight])
+
+    var _distances: number[][] = Array(rows).fill(null).map(() => Array(cols).fill(1000))
     var _parents: Tile[] = []
-    var _matrix = INITIAL_MATRIX_STATE
+    var _matrix = initialMatrixState(rows, cols)
     var _visitedSet: Tile[] = []
 
 
@@ -54,9 +75,9 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
     }, [reset])
 
     const _resetAllWalls = (): void => {
-        for (let row = 0; row < ROWS; row++) {
+        for (let row = 0; row < rows; row++) {
 
-            for (let col = 0; col < COLS; col++) {
+            for (let col = 0; col < cols; col++) {
                 _matrix[row][col].isWall = false
                 _matrix[row][col].dist = 0
                 _matrix[row][col].setTileState(TileState.UNVISITED)
@@ -65,14 +86,14 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
     }
 
     const _resetMatrix = (): void => {
-        _matrix = INITIAL_MATRIX_STATE
+        _matrix = initialMatrixState(rows, cols)
         _matrix[src.row][src.col].setTileState(TileState.SRC)
         _matrix[dest.row][dest.col].setTileState(TileState.DEST)
 
     }
 
     const _resetDistanceMatrix = (): void => {
-        _distances = Array(ROWS).fill(null).map(() => Array(COLS).fill(1000))
+        _distances = Array(rows).fill(null).map(() => Array(cols).fill(1000))
     }
 
     const _resetParentMatrix = () => {
@@ -118,7 +139,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
                 const alt = _distances[u.row][u.col] + v.dist! // alt = dist[u] + G.E(u, v)
                 if (alt < _distances[v.row][v.col]) {
                     _distances[v.row][v.col] = alt
-                    _parents[v.row * COLS + v.col] = u
+                    _parents[v.row * cols + v.col] = u
                     if (_matrix[v.row][v.col].isWall)
                         _matrix[v.row][v.col].setTileState(TileState.VISITED)
 
@@ -149,7 +170,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
             for (let i = 0; i < neighbors.length; i++) {
                 const v = neighbors[i]
                 if (isVisited(_visitedSet, v) || _matrix[v.row][v.col].isWall) continue
-                _parents[v.row * COLS + v.col] = u
+                _parents[v.row * cols + v.col] = u
 
                 if (v.row === destRow && v.col === destCol) {
                     _getShortestPathSequence()
@@ -189,7 +210,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         for (let i = 0; i < neighbors.length; i++) {
             const v = neighbors[i]
             if (!_matrix[v.row][v.col].isWall && !isVisited(_visitedSet, v)) {
-                _parents[v.row * COLS + v.col] = u
+                _parents[v.row * cols + v.col] = u
                 _dfsRecursive(v, dest)
             }
         }
@@ -202,11 +223,11 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         const destRow = dest.row
         const destCol = dest.col
         const sequence: Tile[] = []
-        let current = _parents[destRow * COLS + destCol]
+        let current = _parents[destRow * cols + destCol]
         while (current && (current.row !== srcRow || current.col !== srcCol)) {
             sequence.push(current)
             _matrix[current.row][current.col].setTileState(TileState.PATH)
-            current = _parents[current.row * COLS + current.col]
+            current = _parents[current.row * cols + current.col]
         }
         sequence.reverse()
         _animateVisits(sequence)
@@ -375,7 +396,8 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         <Box className='flex mx-20 mb-2'>
             {description()}
         </Box>
-        <Grid templateColumns={`repeat(${COLS}, 1fr)`} className='mx-auto'>
+        {rows}, {cols}
+        <Grid templateColumns={`repeat(${cols}, 1fr)`} templateRows={`repeat(${rows}, 1fr)`} className='mx-auto'>
             {_matrix.map((tileRow) => tileRow.map((tile) => <GridTile key={Math.random()}
                 src={src}
                 setSrc={setSrc}
