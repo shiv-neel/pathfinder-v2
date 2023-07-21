@@ -13,6 +13,16 @@ export const EMPTY_COST = 5
 export const WALL_COST = Infinity
 export const DEST_COST = 20
 
+export const INITIAL_MATRIX_STATE: Tile[][] = []
+
+for (let j = 0; j < ROWS; j++) {
+    const row: Tile[] = []
+    for (let i = 0; i < COLS; i++) {
+            row.push(new Tile(TileState.UNVISITED, j, i, EMPTY_COST))
+    }
+    INITIAL_MATRIX_STATE.push(row)
+}
+
 export const getNeighbors = (row: number, col: number, matrix: Tile[][]): Tile[] => {
   const neighbors = []
   if (isValidCell(row - 1, col))

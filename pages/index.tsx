@@ -13,33 +13,6 @@ import { COLS } from '../pathfinder/main'
 
 const Home: NextPage = () => {
   const [isShiftKeyPressed, setIsShiftKeyPressed] = useState(false)
-  const [windowWidth, setWindowWidth] = useState(0)
-  const [windowHeight, setWindowHeight] = useState(0)
-
-  useEffect(() => {
-    // Function to update windowWidth state with the current window width
-    const updateWindowWidth = () => {
-      setWindowWidth(window.innerWidth)
-    }
-
-    const updateWindowHeight = () => {
-      setWindowHeight(window.innerHeight)
-    }
-
-    // Set the initial window width
-    updateWindowWidth()
-    updateWindowHeight()
-
-    // Event listener to update windowWidth when the window is resized
-    window.addEventListener('resize', updateWindowWidth)
-    window.addEventListener('resize', updateWindowHeight)
-
-    // Clean up the event listener when the component is unmounted
-    return () => {
-      window.removeEventListener('resize', updateWindowWidth)
-      window.removeEventListener('resize', updateWindowHeight)
-    }
-  }, [])
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { colorMode, toggleColorMode } = useColorMode()
@@ -76,9 +49,8 @@ const Home: NextPage = () => {
       <Box>
         <Toolbar onOpen={onOpen} />
       </Box>
-      {windowWidth}, {windowHeight}
-      <World isShiftKeyPressed={isShiftKeyPressed} windowWidth={windowWidth} windowHeight={windowHeight} />
-      {/* <WelcomeModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} /> */}
+      <World isShiftKeyPressed={isShiftKeyPressed} />
+      <WelcomeModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
       <Footer />
     </Box>
   )
