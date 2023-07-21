@@ -7,7 +7,7 @@ import { BiCheck, BiChevronDown } from 'react-icons/bi'
 import { Algo, AnimationSpeed } from '../models/types'
 import { FiMove } from 'react-icons/fi'
 import { BsCarFrontFill } from 'react-icons/bs'
-import { FaGrinTears, FaMapMarkerAlt, FaTrafficLight, FaCogs, FaBomb } from 'react-icons/fa'
+import { FaGrinTears, FaMapMarkerAlt, FaTrafficLight, FaCogs } from 'react-icons/fa'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { PiPathBold } from 'react-icons/pi'
 import { MdOutlineReplay } from 'react-icons/md'
@@ -378,7 +378,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed, windowWidth, wi
                     <Button onClick={handleTrafficEditClick}
                         className={`flex gap-3 ${isAddingTrafficJam ? 'bg-orange-600' : ''}`}
                         variant='outline'>
-                        <AiOutlinePlus /><FaBomb />
+                        <AiOutlinePlus /><FaTrafficLight />
                     </Button>
                 </Tooltip>
                 <Tooltip label='Move Source' aria-label='Move Source Vertex'>

@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { World } from './World'
 import { FiMove } from 'react-icons/fi'
 import { BsCarFrontFill, BsShiftFill } from 'react-icons/bs'
-import { FaBomb, FaCogs, FaMapMarkerAlt, FaMousePointer, FaTrafficLight } from 'react-icons/fa'
+import { FaCogs, FaMapMarkerAlt, FaMousePointer, FaTrafficLight } from 'react-icons/fa'
 import { Algo } from '../models/types'
 import { BiCheck, BiChevronDown, BiPlus } from 'react-icons/bi'
 import { LiaHandPointerSolid } from 'react-icons/lia'
@@ -106,7 +106,7 @@ const SetSrcDestLocationContent = () => {
                         <Button
                             className='flex gap-3 bg-black'
                             variant='outline'>
-                            <AiOutlinePlus /><FaBomb />
+                            <AiOutlinePlus /><FaTrafficLight />
                         </Button>
                     </Tooltip>
                 </Box>
