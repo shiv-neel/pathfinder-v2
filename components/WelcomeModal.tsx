@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import { World } from './World'
 import { FiMove } from 'react-icons/fi'
 import { BsCarFrontFill, BsShiftFill } from 'react-icons/bs'
-import { FaCogs, FaMapMarkerAlt, FaMousePointer, FaTrafficLight } from 'react-icons/fa'
+import { FaBomb, FaCogs, FaMapMarkerAlt, FaMousePointer } from 'react-icons/fa'
 import { Algo } from '../models/types'
 import { BiCheck, BiChevronDown, BiPlus } from 'react-icons/bi'
 import { LiaHandPointerSolid } from 'react-icons/lia'
@@ -102,11 +102,11 @@ const SetSrcDestLocationContent = () => {
                     </Tooltip>
                 </Box>
                 <Box className='flex items-center gap-6 text-sm'>
-                    Add Traffic Jams (Weighted Edges)<Tooltip label='Add Traffic Jams' aria-label='Add Traffic Jams'>
+                    Add Bomb<Tooltip label='Add Bomb' aria-label='Add Bomb'>
                         <Button
                             className='flex gap-3 bg-black'
                             variant='outline'>
-                            <AiOutlinePlus /><FaTrafficLight />
+                            <AiOutlinePlus /><FaBomb />
                         </Button>
                     </Tooltip>
                 </Box>
@@ -185,11 +185,11 @@ const SimulationControls = () => {
             Use these controls to start and reset the simulation.
         </Box>
         <Box className='flex gap-6 justify-center items-center mt-5'>
-            <Button variant='outline' className='flex gap-2'><PiPathBold className='text-lg text-purple-600' />Visualize Algorithm</Button>
-            <Button variant='outline' className='flex gap-2'><MdOutlineReplay className='text lg text-red-400' /> Reset Board</Button>
+            <Button variant='outline' className='flex gap-2'><PiPathBold className='text-lg text-purple-600' />Visualize</Button>
+            <Button variant='outline' className='flex gap-2'><MdOutlineReplay className='text lg text-red-400' /> Reset</Button>
         </Box>
         <Box className='text-sm mt-5 italic'>
-            NB: the simulation logic uses CSS keyframes, which do not pair nicely with react state hooks.
+            Disclaimer: the simulation logic uses CSS keyframes, which do not pair nicely with react state hooks.
             Thus, resetting <strong>during</strong> the simulation may cause unexpected behavior.
         </Box>
     </Box>

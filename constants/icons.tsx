@@ -1,21 +1,21 @@
 import { BsCarFrontFill } from 'react-icons/bs'
 import { Tile, TileState } from '../pathfinder/Tile'
 import { Box } from '@chakra-ui/react'
-import { FaMapMarkerAlt, FaTrafficLight } from 'react-icons/fa'
+import { FaBomb, FaMapMarkerAlt, FaTrafficLight } from 'react-icons/fa'
 
 export const sourceVertexIcon = <Box w={7} h={7} backgroundColor='#006AFF'
-    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer'>
+    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer hover:scale-105 duration-100'>
     <BsCarFrontFill className='text-lg' />
 </Box>
 
 export const destinationVertexIcon = <Box w={7} h={7} backgroundColor='#E50914'
-    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer'>
+    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer  hover:scale-105 duration-100'>
     <FaMapMarkerAlt className='text-lg' />
 </Box>
 
-export const trafficJamIcon = <Box w={7} h={7} backgroundColor='#EA580C'
-    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer'>
-    <FaTrafficLight />
+export const bombIcon = <Box w={7} h={7} backgroundColor='#EA580C'
+    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer hover:scale-105 duration-100'>
+    <FaBomb />
 </Box>
 
 export const wallIcon = <Box w={7} h={7} backgroundColor='#FFFFFF' borderRadius={'15%'}></Box>
@@ -30,8 +30,8 @@ export const getIconFromState = (state: TileState) => {
             return sourceVertexIcon
         case TileState.DEST:
             return destinationVertexIcon
-        case TileState.TRAFFIC:
-            return trafficJamIcon
+        case TileState.BOMB:
+            return bombIcon
         default:
             return <></>
     }

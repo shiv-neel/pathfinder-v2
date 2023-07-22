@@ -31,10 +31,10 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onOpen, onClose, 
                                 <Box className='text-sm mb-5 flex flex-col gap-2'>
                                     <Box className='flex gap-2 items-center'>Wall: <IoInfiniteOutline className='text-xl' /></Box>
                                     <Box>Empty: 5</Box>
-                                    <Box className='flex gap-5'>Traffic Jam: {edgeWeight} <p className='underline cursor-pointer text-purple-400' onClick={() => setEdgeWeight(20)}>Reset to Default</p></Box>
+                                    <Box className='flex gap-5'>Bomb: {edgeWeight} <p className='underline cursor-pointer text-purple-400' onClick={() => setEdgeWeight(20)}>Reset to Default</p></Box>
                                 </Box>
                                 <Box>
-                                    <Box className='text-lg font-semibold mb-2 mt-5'>Traffic Jam Weight [ -45, +55 ] </Box>
+                                    <Box className='text-lg font-semibold mb-2 mt-5'>Bomb Weight [ -45, +55 ] </Box>
                                     <Box className='text-sm flex gap-5 items-center'>
                                         -45
                                         <Slider value={edgeWeight} defaultValue={edgeWeight} min={-45} max={55} onChange={(val) => setEdgeWeight(val)} step={1}>
@@ -66,7 +66,6 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onOpen, onClose, 
                                 Close
                             </Button>
                         </ModalFooter>
-
                     </Box>
                 </ModalContent>
             </Modal >

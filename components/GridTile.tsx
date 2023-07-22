@@ -13,29 +13,28 @@ interface GridTileProps {
     dest: Tile
     setDest: Dispatch<SetStateAction<Tile>>
     isEditingDest: boolean
-    trafficJams: Tile[]
-    setTrafficJams: Dispatch<SetStateAction<Tile[]>>
-    isAddingTrafficJam: boolean
+    bombs: Tile[]
+    setBombs: Dispatch<SetStateAction<Tile[]>>
+    isAddingBomb: boolean
     matrix: Tile[][]
     setIsEditingSrc: Dispatch<SetStateAction<boolean>>
     setIsEditingDest: Dispatch<SetStateAction<boolean>>
-    setIsAddingTrafficJam: Dispatch<SetStateAction<boolean>>
+    setIsAddingBomb: Dispatch<SetStateAction<boolean>>
     edgeCost: number
-    isShiftKeyPressed: boolean
+    isMousePressed: boolean
 }
 
 export const GridTile: React.FC<GridTileProps> = ({
     tile, src, setSrc, isEditingSrc,
-    dest, setDest, isEditingDest, trafficJams, setTrafficJams, isAddingTrafficJam,
-    matrix, setIsEditingSrc, setIsEditingDest, setIsAddingTrafficJam, edgeCost, isShiftKeyPressed
+    dest, setDest, isEditingDest, bombs, setBombs, isAddingBomb,
+    matrix, setIsEditingSrc, setIsEditingDest, setIsAddingBomb, edgeCost, isMousePressed
 }) => {
     const [isWall, setIsWall] = useState<boolean>(false)
-    const className = tile.isWall ? 'node-wall' : ''
 
     const handleToggleWallState = () => {
         if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST ||
-            tile.tileState === TileState.TRAFFIC) return
-        if (!isShiftKeyPressed) return
+            tile.tileState === TileState.BOMB) return
+        if (!isMousePressed) return
         tile.isWall = !tile.isWall
         tile.dist = tile.isWall ? WALL_COST : 0
         console.log(tile.isWall)
@@ -43,24 +42,25 @@ export const GridTile: React.FC<GridTileProps> = ({
     }
 
     const handleClick = () => {
-        if (isShiftKeyPressed || tile.isWall) {
+        if (isMousePressed || tile.isWall) {
             handleToggleWallState()
             return
         }
         if (tile.tileState === TileState.SRC) {
             setIsEditingSrc(!isEditingSrc)
             setIsEditingDest(false)
-            setIsAddingTrafficJam(false)
+            setIsAddingBomb(false)
         }
         else if (tile.tileState === TileState.DEST) {
             setIsEditingDest(!isEditingDest)
             setIsEditingSrc(false)
-            setIsAddingTrafficJam(false)
+            setIsAddingBomb(false)
         }
         if (isEditingSrc) {
             if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
             matrix[src.row][src.col].setTileState(TileState.UNVISITED)
             tile.setTileState(TileState.SRC)
+            tile.setIsWall(false)
             setSrc(tile)
             setIsEditingSrc(false)
         }
@@ -68,31 +68,34 @@ export const GridTile: React.FC<GridTileProps> = ({
             if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
             matrix[dest.row][dest.col].setTileState(TileState.UNVISITED)
             tile.setTileState(TileState.DEST)
+            tile.setIsWall(false)
             setDest(tile)
             setIsEditingDest(false)
         }
-        else if (isAddingTrafficJam) {
+        else if (isAddingBomb) {
             if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
-            if (tile.tileState === TileState.TRAFFIC) {
+            if (tile.tileState === TileState.BOMB) {
                 tile.setTileState(TileState.UNVISITED)
-                setTrafficJams(trafficJams.filter(cone => cone !== tile))
+                setBombs(bombs.filter(b => b !== tile))
             }
             else {
-                tile.setTileState(TileState.TRAFFIC)
+                tile.setTileState(TileState.BOMB)
                 tile.dist = edgeCost
-                setTrafficJams([...trafficJams, tile])
+                setBombs([...bombs, tile])
+                tile.setIsWall(false)
             }
         }
     }
 
     return (
         <Box
+            // onMouseUp={}
             onMouseEnter={handleToggleWallState}
             onClick={handleClick}
-            minW={7}
-            minH={7}>
+            width={7}
+            height={7}>
             <Box id={`node-${tile.row}-${tile.col}`}
-                className={`flex justify-center items-center cursor-pointer node ${className}`}>
+                className={`flex justify-center items-center cursor-pointer node`}>
                 {getIconFromState(tile.tileState)}</Box>
         </Box>
     )

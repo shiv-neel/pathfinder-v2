@@ -49,7 +49,7 @@ const Home: NextPage = () => {
       <Box>
         <Toolbar onOpen={onOpen} />
       </Box>
-      <World isShiftKeyPressed={isShiftKeyPressed} />
+      <World isMousePressed={isShiftKeyPressed} onOpenTutorial={onOpen} />
       <WelcomeModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
       <Footer />
     </Box>

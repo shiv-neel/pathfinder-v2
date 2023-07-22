@@ -3,38 +3,39 @@ import { Box, Button, Grid, Menu, MenuButton, MenuItem, MenuList, Tooltip, useDi
 import { Tile, TileState } from '../pathfinder/Tile'
 import { GridTile } from './GridTile'
 import { COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, dequeue, getNeighbors, isVisited, speedNormalizer } from '../pathfinder/main'
-import { BiCheck, BiChevronDown } from 'react-icons/bi'
+import { BiCheck, BiChevronDown, BiHelpCircle } from 'react-icons/bi'
 import { Algo, AnimationSpeed } from '../models/types'
 import { FiMove } from 'react-icons/fi'
 import { BsCarFrontFill } from 'react-icons/bs'
-import { FaGrinTears, FaMapMarkerAlt, FaTrafficLight, FaCogs } from 'react-icons/fa'
+import { FaGrinTears, FaMapMarkerAlt, FaBomb, FaCogs, FaBandcamp, FaPencilAlt, FaSchool, FaGraduationCap } from 'react-icons/fa'
 import { AiOutlinePlus } from 'react-icons/ai'
 import { PiPathBold } from 'react-icons/pi'
 import { MdOutlineReplay } from 'react-icons/md'
 import SettingsModal from './SettingsModal'
 
 interface WorldProps {
-    isShiftKeyPressed: boolean
+    isMousePressed: boolean
+    onOpenTutorial: () => void
 }
 
 
 
-export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
+export const World: React.FC<WorldProps> = ({ isMousePressed, onOpenTutorial }) => {
     var _distances: number[][] = Array(ROWS).fill(null).map(() => Array(COLS).fill(1000))
     var _parents: Tile[] = []
     var _matrix = INITIAL_MATRIX_STATE
     var _visitedSet: Tile[] = []
 
 
-    const [src, setSrc] = useState<Tile>(new Tile(TileState.SRC, 12, 10))
-    const [dest, setDest] = useState<Tile>(new Tile(TileState.DEST, 12, 40))
-    const [trafficJams, setTrafficJams] = useState<Tile[]>([])
+    const [src, setSrc] = useState<Tile>(new Tile(TileState.SRC, 12, 11))
+    const [dest, setDest] = useState<Tile>(new Tile(TileState.DEST, 12, 33))
+    const [bombs, setBombs] = useState<Tile[]>([])
     const [algo, setAlgo] = useState<Algo>(Algo.DIJKSTRA)
     const [reset, setReset] = useState<boolean>(false)
 
     const [isEditingSrc, setIsEditingSrc] = useState<boolean>(false)
     const [isEditingDest, setIsEditingDest] = useState<boolean>(false)
-    const [isAddingTrafficJam, setIsAddingTrafficJam] = useState<boolean>(false)
+    const [isAddingBomb, setIsAddingBomb] = useState<boolean>(false)
 
     const [edgeWeight, setEdgeWeight] = useState<number>(20)
     const [animationSpeed, setAnimationSpeed] = useState<AnimationSpeed>(AnimationSpeed.MEDIUM)
@@ -255,7 +256,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
     const menuItems = (): JSX.Element[] => {
         const items: JSX.Element[] = []
         for (const _algo of Object.values(Algo)) {
-            items.push(<MenuItem key={Math.random()} className='flex items-center hover:font-bold' onClick={() => {
+            items.push(<MenuItem isDisabled={_algo === Algo.A_STAR} key={Math.random()} className='flex items-center hover:font-bold' onClick={() => {
                 setAlgo(_algo)
             }}>
                 <>{_algo == algo ? <BiCheck className='text-xl text-green-600' /> : null}</>
@@ -270,7 +271,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         if (algo === Algo.DIJKSTRA) {
             description = <p>
                 <span className='font-bold text-green-500'>Dijkstra&apos;s</span> Algorithm is weighted, and guaranteed to find the shortest path.
-                It will avoid <span className='font-bold text-orange-600'>traffic jams</span> when possible.</p>
+                It will avoid <span className='font-bold text-orange-600'>bombs</span> when possible.</p>
         }
         else if (algo === Algo.GENERIC_BFS) {
             description = <p><span className='font-bold text-green-500'>Breadth-First Search (BFS)</span> is unweighted, and not guaranteed to find the shortest path.</p>
@@ -279,7 +280,7 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
             description = <p><span className='font-bold text-green-500'>Depth-First Search (DFS)</span> unweighted, and not guaranteed to find the shortest path.</p>
         }
 
-        if (isShiftKeyPressed) {
+        if (isMousePressed) {
             editing = <p>Hover over tile to create or delete <span className='font-bold text-gray-200'>walls</span></p>
         }
         else if (isEditingSrc) {
@@ -288,20 +289,20 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         else if (isEditingDest) {
             editing = <p>Click on a tile to edit the <span className='font-bold text-red-500'>destination</span></p>
         }
-        else if (isAddingTrafficJam) {
-            editing = <p>Click on a tile to add or remove a <span className='font-bold text-orange-600'>traffic jam</span></p>
+        else if (isAddingBomb) {
+            editing = <p>Click on a tile to add or remove a <span className='font-bold text-orange-600'>bomb</span></p>
         }
         else {
             editing = null
         }
-        return <Box className='flex justify-between w-full'><Box className='mr-auto'>{description}</Box><Box className='ml-auto'>{editing}</Box></Box>
+        return <Box className='flex justify-between w-full'><Box className='text-xl'>{editing}</Box></Box>
     }
 
     const handleSrcEditClick = () => {
         if (!isEditingSrc) {
             setIsEditingSrc(true)
             setIsEditingDest(false)
-            setIsAddingTrafficJam(false)
+            setIsAddingBomb(false)
         }
         else {
             setIsEditingSrc(false)
@@ -312,68 +313,56 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
         if (!isEditingDest) {
             setIsEditingDest(true)
             setIsEditingSrc(false)
-            setIsAddingTrafficJam(false)
+            setIsAddingBomb(false)
         }
         else {
             setIsEditingDest(false)
         }
     }
 
-    const handleTrafficEditClick = () => {
-        if (!isAddingTrafficJam) {
-            setIsAddingTrafficJam(s => !s)
+    const handleBombEditClick = () => {
+        if (!isAddingBomb) {
+            setIsAddingBomb(s => !s)
             setIsEditingSrc(false)
             setIsEditingDest(false)
         }
         else {
-            setIsAddingTrafficJam(false)
+            setIsAddingBomb(false)
         }
     }
 
     return <Box className='flex flex-col justify-center'>
-        <Box className='flex gap-6 items-center justify-start mx-40 mb-5'>
-            <Box className='flex gap-6'>
+        <Box className='flex gap-6 items-center mx-10 mb-5'>
+            <Box className='flex gap-6 items-center'>
                 <Menu>
-                    <MenuButton as={Button} rightIcon={<BiChevronDown />} variant='outline' className='bg-gray-200 text-black hover:text-white'>
+                    <MenuButton as={Button} rightIcon={<BiChevronDown />} variant='outline' className=''>
                         Selected: {algo}
                     </MenuButton>
                     <MenuList bg='black'>
                         {menuItems()}
                     </MenuList>
                 </Menu>
-
-                <Button onClick={onOpen} variant='outline' className='flex gap-2'> <FaCogs className='text-lg text-green-600' /> Configure Simulation</Button>
-                <Button onClick={_pathVisualizer} variant='outline' className='flex gap-2'>
-                    <PiPathBold className='text-lg text-purple-600' />Visualize Algorithm!
+                <Button onClick={_pathVisualizer} variant='outline' className='flex gap-2 bg-gray-200 text-black hover:text-white'>
+                    <PiPathBold className='text-lg text-purple-600' />Visualize!
                 </Button>
                 <SettingsModal isOpen={isOpen} onOpen={onOpen} onClose={onClose}
                     animationSpeed={animationSpeed} setAnimationSpeed={setAnimationSpeed}
                     edgeWeight={edgeWeight} setEdgeWeight={setEdgeWeight} />
-                <Button onClick={() => setReset(true)} variant='outline' className='flex gap-2'><MdOutlineReplay className='text lg text-red-400' /> Reset Board</Button>
+                <Button onClick={() => setReset(true)} variant='outline' className='flex gap-2'><MdOutlineReplay className='text-lg text-red-400' />Reset</Button>
 
-            </Box>
-            <Box className='flex ml-auto gap-6 items-center'>
-                <Tooltip label='Add Traffic Jam' aria-label='Add Traffic Jam'>
-                    <Button onClick={handleTrafficEditClick}
-                        className={`flex gap-3 ${isAddingTrafficJam ? 'bg-orange-600' : ''}`}
-                        variant='outline'>
-                        <AiOutlinePlus /><FaTrafficLight />
+                <Tooltip label='Add/Remove Bombs' aria-label='Add/Remove Bombs'>
+                    <Button onClick={handleBombEditClick}
+                        className={`flex gap-3 ${isAddingBomb ? 'bg-orange-600' : ''}`}
+                        variant='outline'><FaBomb />
                     </Button>
                 </Tooltip>
-                <Tooltip label='Move Source' aria-label='Move Source Vertex'>
-                    <Button onClick={handleSrcEditClick}
-                        className={`flex gap-3 ${isEditingSrc ? 'bg-blue-600' : ''}`}
-                        variant='outline'>
-                        <FiMove /><BsCarFrontFill />
-                    </Button>
-                </Tooltip>
-                <Tooltip label='Move Destination' aria-label='Move Destination Vertex'>
-                    <Button onClick={handleDestEditClick} className={`flex gap-3 ${isEditingDest ? 'bg-red-600' : ''}`} variant='outline'><FiMove /><FaMapMarkerAlt /></Button>
+            </Box>
+            <Box className='ml-auto flex gap-6'>
+                <Button className='flex gap-2 bg-gray-200 text-black hover:text-white' onClick={onOpenTutorial}>Open Tutorial<BiHelpCircle className='text-xl' /></Button>
+                <Tooltip label='Settings' aria-label='Settings'>
+                    <Button onClick={onOpen} variant='outline' className='flex gap-2'> <FaCogs className='text-lg text-green-600' /></Button>
                 </Tooltip>
             </Box>
-        </Box>
-        <Box className='flex mx-20 mb-2'>
-            {description()}
         </Box>
         <Grid templateColumns={`repeat(${COLS}, 1fr)`} className='mx-auto'>
             {_matrix.map((tileRow) => tileRow.map((tile) => <GridTile key={Math.random()}
@@ -383,14 +372,14 @@ export const World: React.FC<WorldProps> = ({ isShiftKeyPressed }) => {
                 dest={dest}
                 setDest={setDest}
                 isEditingDest={isEditingDest}
-                trafficJams={trafficJams}
-                setTrafficJams={setTrafficJams}
-                isAddingTrafficJam={isAddingTrafficJam}
+                bombs={bombs}
+                setBombs={setBombs}
+                isAddingBomb={isAddingBomb}
                 matrix={_matrix}
-                isShiftKeyPressed={isShiftKeyPressed}
+                isMousePressed={isMousePressed}
                 setIsEditingSrc={setIsEditingSrc}
                 setIsEditingDest={setIsEditingDest}
-                setIsAddingTrafficJam={setIsAddingTrafficJam}
+                setIsAddingBomb={setIsAddingBomb}
                 edgeCost={edgeWeight}
                 tile={tile} />))}
         </Grid>
