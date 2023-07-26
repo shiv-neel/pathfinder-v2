@@ -12,7 +12,7 @@ import { COLS } from '../pathfinder/main'
 
 
 const Home: NextPage = () => {
-  const [isShiftKeyPressed, setIsShiftKeyPressed] = useState(false)
+  const [isMousePressed, setIsMousePressed] = useState(false)
 
   const { isOpen, onOpen, onClose } = useDisclosure()
   const { colorMode, toggleColorMode } = useColorMode()
@@ -22,34 +22,13 @@ const Home: NextPage = () => {
       toggleColorMode()
   })
 
-  const handleKeyDown = (event: KeyboardEvent) => {
-    if (event.shiftKey) {
-      setIsShiftKeyPressed(true)
-    }
-  }
-
-  const handleKeyUp = (event: KeyboardEvent) => {
-    if (!event.shiftKey) {
-      setIsShiftKeyPressed(false)
-    }
-  }
-
-  useEffect(() => {
-    window.addEventListener('keydown', handleKeyDown)
-    window.addEventListener('keyup', handleKeyUp)
-
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown)
-      window.removeEventListener('keyup', handleKeyUp)
-    }
-  }, [isShiftKeyPressed])
 
   return (
     <Box className='flex flex-col min-h-screen mx-auto' backgroundColor={'#1e1e1e'}>
       <Box>
         <Toolbar onOpen={onOpen} />
       </Box>
-      <World isMousePressed={isShiftKeyPressed} onOpenTutorial={onOpen} />
+      <World isMousePressed={isMousePressed} setIsMousePressed={setIsMousePressed} onOpenTutorial={onOpen} />
       <WelcomeModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
       <Footer />
     </Box>

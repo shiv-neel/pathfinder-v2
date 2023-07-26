@@ -15,12 +15,13 @@ import SettingsModal from './SettingsModal'
 
 interface WorldProps {
     isMousePressed: boolean
+    setIsMousePressed: React.Dispatch<React.SetStateAction<boolean>>
     onOpenTutorial: () => void
 }
 
 
 
-export const World: React.FC<WorldProps> = ({ isMousePressed, onOpenTutorial }) => {
+export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed, onOpenTutorial }) => {
     var _distances: number[][] = Array(ROWS).fill(null).map(() => Array(COLS).fill(1000))
     var _parents: Tile[] = []
     var _matrix = INITIAL_MATRIX_STATE
@@ -377,6 +378,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, onOpenTutorial }) 
                 isAddingBomb={isAddingBomb}
                 matrix={_matrix}
                 isMousePressed={isMousePressed}
+                setIsMousePressed={setIsMousePressed}
                 setIsEditingSrc={setIsEditingSrc}
                 setIsEditingDest={setIsEditingDest}
                 setIsAddingBomb={setIsAddingBomb}

@@ -22,28 +22,38 @@ interface GridTileProps {
     setIsAddingBomb: Dispatch<SetStateAction<boolean>>
     edgeCost: number
     isMousePressed: boolean
+    setIsMousePressed: Dispatch<SetStateAction<boolean>>
 }
 
 export const GridTile: React.FC<GridTileProps> = ({
     tile, src, setSrc, isEditingSrc,
     dest, setDest, isEditingDest, bombs, setBombs, isAddingBomb,
-    matrix, setIsEditingSrc, setIsEditingDest, setIsAddingBomb, edgeCost, isMousePressed
+    matrix, setIsEditingSrc, setIsEditingDest, setIsAddingBomb, edgeCost, isMousePressed, setIsMousePressed
 }) => {
     const [isWall, setIsWall] = useState<boolean>(false)
 
-    const handleToggleWallState = () => {
-        if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST ||
-            tile.tileState === TileState.BOMB) return
-        if (!isMousePressed) return
-        tile.isWall = !tile.isWall
-        tile.dist = tile.isWall ? WALL_COST : 0
-        console.log(tile.isWall)
-        setIsWall(tile.isWall)
+
+    const handleMouseDown = () => {
+        setIsMousePressed(true)
+        tile.setIsWall(!tile.isWall)
+        setIsWall(true)
     }
 
+    const handleMouseEnter = () => {
+        if (!isMousePressed) return
+        tile.setIsWall(!tile.isWall)
+        setIsWall(true)
+    }
+
+    const handleMouseUp = () => {
+        setIsMousePressed(false)
+        // setIsWall(tile.isWall)
+    }
+
+
     const handleClick = () => {
-        if (isMousePressed || tile.isWall) {
-            handleToggleWallState()
+        if (isMousePressed) {
+            tile.setIsWall(!tile.isWall)
             return
         }
         if (tile.tileState === TileState.SRC) {
@@ -90,13 +100,15 @@ export const GridTile: React.FC<GridTileProps> = ({
     return (
         <Box
             // onMouseUp={}
-            onMouseEnter={handleToggleWallState}
-            onClick={handleClick}
+            onMouseEnter={handleMouseEnter}
+            onMouseUp={handleMouseUp}
+            onMouseDown={handleMouseDown}
+            // onClick={handleClick}
             width={7}
             height={7}>
             <Box id={`node-${tile.row}-${tile.col}`}
                 className={`flex justify-center items-center cursor-pointer node`}>
-                {getIconFromState(tile.tileState)}</Box>
+                {tile.isWall ? 'w' : getIconFromState(tile.tileState)}</Box>
         </Box>
     )
 }
