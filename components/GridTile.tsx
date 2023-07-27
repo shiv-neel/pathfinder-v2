@@ -16,6 +16,7 @@ interface GridTileProps {
     bombs: Tile[]
     setBombs: Dispatch<SetStateAction<Tile[]>>
     isAddingBomb: boolean
+    isAddingWalls: boolean
     matrix: Tile[][]
     setIsEditingSrc: Dispatch<SetStateAction<boolean>>
     setIsEditingDest: Dispatch<SetStateAction<boolean>>
@@ -27,27 +28,48 @@ interface GridTileProps {
 
 export const GridTile: React.FC<GridTileProps> = ({
     tile, src, setSrc, isEditingSrc,
-    dest, setDest, isEditingDest, bombs, setBombs, isAddingBomb,
+    dest, setDest, isEditingDest, bombs, setBombs, isAddingBomb, isAddingWalls,
     matrix, setIsEditingSrc, setIsEditingDest, setIsAddingBomb, edgeCost, isMousePressed, setIsMousePressed
 }) => {
     const [isWall, setIsWall] = useState<boolean>(false)
-
+    const [isBomb, setIsBomb] = useState<boolean>(false)
 
     const handleMouseDown = () => {
         setIsMousePressed(true)
-        tile.setIsWall(!tile.isWall)
-        setIsWall(true)
+        if (isAddingWalls) {
+            if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
+            tile.setIsWall(!tile.isWall)
+            setIsWall(true)
+        }
+        else if (isAddingBomb) {
+            if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
+            tile.setTileState(TileState.BOMB)
+            tile.dist = edgeCost
+            setBombs([...bombs, tile])
+            tile.setIsWall(false)
+        }
+        // setIsWall(true)
     }
 
     const handleMouseEnter = () => {
         if (!isMousePressed) return
-        tile.setIsWall(!tile.isWall)
+        if (isAddingWalls) {
+            if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
+            tile.setIsWall(!tile.isWall)
+            setIsWall(true)
+        }
+        else if (isAddingBomb) {
+            if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
+            tile.setTileState(TileState.BOMB)
+            tile.dist = edgeCost
+            setBombs([...bombs, tile])
+            tile.setIsWall(false)
+        }
         setIsWall(true)
     }
 
     const handleMouseUp = () => {
         setIsMousePressed(false)
-        // setIsWall(tile.isWall)
     }
 
 

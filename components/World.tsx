@@ -12,6 +12,7 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { PiPathBold } from 'react-icons/pi'
 import { MdOutlineReplay } from 'react-icons/md'
 import SettingsModal from './SettingsModal'
+import { GiBrickWall } from 'react-icons/gi'
 
 interface WorldProps {
     isMousePressed: boolean
@@ -37,6 +38,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
     const [isEditingSrc, setIsEditingSrc] = useState<boolean>(false)
     const [isEditingDest, setIsEditingDest] = useState<boolean>(false)
     const [isAddingBomb, setIsAddingBomb] = useState<boolean>(false)
+    const [isAddingWalls, setIsAddingWalls] = useState<boolean>(false)
 
     const [edgeWeight, setEdgeWeight] = useState<number>(20)
     const [animationSpeed, setAnimationSpeed] = useState<AnimationSpeed>(AnimationSpeed.MEDIUM)
@@ -323,14 +325,27 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
         }
     }
 
-    const handleBombEditClick = () => {
+    const handleBombAddClick = () => {
         if (!isAddingBomb) {
             setIsAddingBomb(s => !s)
             setIsEditingSrc(false)
             setIsEditingDest(false)
+            setIsAddingWalls(false)
         }
         else {
             setIsAddingBomb(false)
+        }
+    }
+
+    const handleWallsAddClick = () => {
+        if (!isAddingWalls) {
+            setIsAddingWalls(s => !s)
+            setIsEditingSrc(false)
+            setIsEditingDest(false)
+            setIsAddingBomb(false)
+        }
+        else {
+            setIsAddingWalls(false)
         }
     }
 
@@ -354,10 +369,16 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
                     edgeWeight={edgeWeight} setEdgeWeight={setEdgeWeight} />
                 <Button onClick={() => setReset(true)} variant='outline' className='flex gap-2'><MdOutlineReplay className='text-lg text-red-400' />Reset</Button>
 
-                <Tooltip label='Add/Remove Bombs' aria-label='Add/Remove Bombs'>
-                    <Button onClick={handleBombEditClick}
+                <Tooltip label='Add Bombs' aria-label='Add Bombs'>
+                    <Button onClick={handleBombAddClick}
                         className={`flex gap-3 ${isAddingBomb ? 'bg-orange-600' : ''}`}
                         variant='outline'><FaBomb />
+                    </Button>
+                </Tooltip>
+                <Tooltip label='Add Walls' aria-label='Add Walls'>
+                    <Button onClick={handleWallsAddClick}
+                        className={`flex gap-3 ${isAddingWalls ? 'bg-amber-900' : ''}`}
+                        variant='outline'><GiBrickWall />
                     </Button>
                 </Tooltip>
                 <Box className='mx-auto'>Hint: Click and drag to draw and erase walls.<br /> TODO make this a revolving text with more cool hints</Box>
@@ -380,6 +401,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
                 bombs={bombs}
                 setBombs={setBombs}
                 isAddingBomb={isAddingBomb}
+                isAddingWalls={isAddingWalls}
                 matrix={_matrix}
                 isMousePressed={isMousePressed}
                 setIsMousePressed={setIsMousePressed}
