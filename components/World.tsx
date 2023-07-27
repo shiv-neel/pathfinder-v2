@@ -360,6 +360,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
                         variant='outline'><FaBomb />
                     </Button>
                 </Tooltip>
+                <Box className='mx-auto'>Hint: Click and drag to draw and erase walls.<br /> TODO make this a revolving text with more cool hints</Box>
             </Box>
             <Box className='ml-auto flex gap-6'>
                 <Button className='flex gap-2 bg-gray-200 text-black hover:text-white' onClick={onOpenTutorial}>Open Tutorial<BiHelpCircle className='text-xl' /></Button>
