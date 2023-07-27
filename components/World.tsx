@@ -121,12 +121,14 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
                 if (alt < _distances[v.row][v.col]) {
                     _distances[v.row][v.col] = alt
                     _parents[v.row * COLS + v.col] = u
-                    if (_matrix[v.row][v.col].isWall)
-                        _matrix[v.row][v.col].setTileState(TileState.VISITED)
 
                     if (v.row === destRow && v.col === destCol) {
                         _getShortestPathSequence()
                         return
+                    }
+                    if (_matrix[v.row][v.col].isWall) {
+                        _matrix[v.row][v.col].setTileState(TileState.VISITED)
+                        continue
                     }
                     queue.push(v)
                     if (!isVisited(_visitedSet, v))
@@ -331,6 +333,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
             setIsAddingBomb(false)
         }
     }
+
 
     return <Box className='flex flex-col justify-center'>
         <Box className='flex gap-6 items-center mx-10 mb-5'>

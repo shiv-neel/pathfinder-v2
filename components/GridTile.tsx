@@ -107,8 +107,8 @@ export const GridTile: React.FC<GridTileProps> = ({
             width={7}
             height={7}>
             <Box id={`node-${tile.row}-${tile.col}`}
-                className={`flex justify-center items-center cursor-pointer node`}>
-                {tile.isWall ? 'w' : getIconFromState(tile.tileState)}</Box>
+                className={`flex justify-center items-center cursor-pointer node ${tile.isWall ? ' node-wall' : ''}`}>
+                {getIconFromState(tile.tileState)}</Box>
         </Box>
     )
 }
