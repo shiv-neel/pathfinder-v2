@@ -38,7 +38,7 @@ export const GridTile: React.FC<GridTileProps> = ({
         setIsMousePressed(true)
         if (isAddingWalls) {
             if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
-            tile.setIsWall(!tile.isWall)
+            tile.setIsWall(true)
             setIsWall(true)
         }
         else if (isAddingBomb) {
@@ -58,7 +58,7 @@ export const GridTile: React.FC<GridTileProps> = ({
         if (!isMousePressed) return
         if (isAddingWalls) {
             if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
-            tile.setIsWall(!tile.isWall)
+            tile.setIsWall(true)
             setIsWall(true)
         }
         else if (isAddingBomb) {
