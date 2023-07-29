@@ -355,7 +355,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
             <Box className='flex gap-6 items-center'>
                 <Menu>
                     <MenuButton as={Button} rightIcon={<BiChevronDown />} variant='outline' className=''>
-                        Selected: {algo}
+                        {algo}
                     </MenuButton>
                     <MenuList bg='black'>
                         {menuItems()}
@@ -369,16 +369,23 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
                     edgeWeight={edgeWeight} setEdgeWeight={setEdgeWeight} />
                 <Button onClick={() => setReset(true)} variant='outline' className='flex gap-2'><MdOutlineReplay className='text-lg text-red-400' />Reset</Button>
 
-                <Tooltip label='Add Bombs' aria-label='Add Bombs'>
+                <Tooltip label='Bombs are weighted edges.
+                Weighted algorithms like Dijkstra&apos;s and A* will try to avoid these cells if it can.' aria-label='Add Bombs'>
                     <Button onClick={handleBombAddClick}
                         className={`flex gap-3 ${isAddingBomb ? 'bg-orange-600' : ''}`}
-                        variant='outline'><FaBomb />
+                        variant='outline'><FaBomb /> Bombs
                     </Button>
                 </Tooltip>
-                <Tooltip label='Add Walls' aria-label='Add Walls'>
+                <Tooltip label='Walls are impenetrable. The algorithm will try to find a path around these walls.' aria-label='Add Walls'>
                     <Button onClick={handleWallsAddClick}
                         className={`flex gap-3 ${isAddingWalls ? 'bg-amber-900' : ''}`}
-                        variant='outline'><GiBrickWall />
+                        variant='outline'><GiBrickWall /> Walls
+                    </Button>
+                </Tooltip>
+                <Tooltip label='Move the source vertex.' aria-label='Add Walls'>
+                    <Button onClick={handleSrcEditClick}
+                        className={`flex gap-3 ${isEditingSrc ? 'bg-blue-600' : ''}`}
+                        variant='outline'><BsCarFrontFill /> Source (doesnt work yet)
                     </Button>
                 </Tooltip>
                 <Box className='mx-auto'>Hint: Click and drag to draw and erase walls.<br /> TODO make this a revolving text with more cool hints</Box>

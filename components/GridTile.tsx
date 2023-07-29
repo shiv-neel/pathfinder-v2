@@ -48,7 +48,10 @@ export const GridTile: React.FC<GridTileProps> = ({
             setBombs([...bombs, tile])
             tile.setIsWall(false)
         }
-        // setIsWall(true)
+        else {
+            setIsWall(false)
+            tile.setTileState(TileState.UNVISITED)
+        }
     }
 
     const handleMouseEnter = () => {
@@ -70,53 +73,6 @@ export const GridTile: React.FC<GridTileProps> = ({
 
     const handleMouseUp = () => {
         setIsMousePressed(false)
-    }
-
-
-    const handleClick = () => {
-        if (isMousePressed) {
-            tile.setIsWall(!tile.isWall)
-            return
-        }
-        if (tile.tileState === TileState.SRC) {
-            setIsEditingSrc(!isEditingSrc)
-            setIsEditingDest(false)
-            setIsAddingBomb(false)
-        }
-        else if (tile.tileState === TileState.DEST) {
-            setIsEditingDest(!isEditingDest)
-            setIsEditingSrc(false)
-            setIsAddingBomb(false)
-        }
-        if (isEditingSrc) {
-            if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
-            matrix[src.row][src.col].setTileState(TileState.UNVISITED)
-            tile.setTileState(TileState.SRC)
-            tile.setIsWall(false)
-            setSrc(tile)
-            setIsEditingSrc(false)
-        }
-        else if (isEditingDest) {
-            if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
-            matrix[dest.row][dest.col].setTileState(TileState.UNVISITED)
-            tile.setTileState(TileState.DEST)
-            tile.setIsWall(false)
-            setDest(tile)
-            setIsEditingDest(false)
-        }
-        else if (isAddingBomb) {
-            if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
-            if (tile.tileState === TileState.BOMB) {
-                tile.setTileState(TileState.UNVISITED)
-                setBombs(bombs.filter(b => b !== tile))
-            }
-            else {
-                tile.setTileState(TileState.BOMB)
-                tile.dist = edgeCost
-                setBombs([...bombs, tile])
-                tile.setIsWall(false)
-            }
-        }
     }
 
     return (
