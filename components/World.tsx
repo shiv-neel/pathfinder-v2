@@ -139,7 +139,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
                 }
             }
         }
-        alert('No path found! Did you trap your car from all sides? :(')
+        alert('No path found!')
     }
 
     const _bfs = (): void => {
@@ -168,7 +168,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
 
             }
         }
-        _getShortestPathSequence()
+        alert('No path found!')
     }
 
 
@@ -184,7 +184,6 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
 
     const _dfsRecursive = (u: Tile, dest: Tile) => {
         if (u.row === dest.row && u.col === dest.col) {
-            console.log('found')
             console.log(_visitedSet)
         }
 
