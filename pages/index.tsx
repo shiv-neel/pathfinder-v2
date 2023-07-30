@@ -29,7 +29,7 @@ const Home: NextPage = () => {
         <Toolbar onOpen={onOpen} />
       </Box>
       <World isMousePressed={isMousePressed} setIsMousePressed={setIsMousePressed} onOpenTutorial={onOpen} />
-      <WelcomeModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} />
+      {/* <WelcomeModal isOpen={isOpen} onOpen={onOpen} onClose={onClose} /> */}
       <Footer />
     </Box>
   )

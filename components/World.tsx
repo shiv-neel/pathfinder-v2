@@ -344,7 +344,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
 
                 <Box className='mx-auto text-green-400 font-bold'>{isEditingSrc || isEditingDest ?
                     `Click on a new cell to move the ${isEditingSrc ? 'source' : 'destination'}.`
-                    : 'Customize the grid by adding walls and bombs.'}</Box>
+                    : 'Customize the grid by drawing walls and bombs.'}</Box>
 
                 <Tooltip label='Bombs are WEIGHTED EDGES.
                 Weighted algorithms like Dijkstra&apos;s and A* will try to avoid these cells if it can.' aria-label='Add Bombs'>

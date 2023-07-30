@@ -67,9 +67,9 @@ export const GridTile: React.FC<GridTileProps> = ({
             setIsAddingBomb(false)
             setIsAddingWall(false)
             setIsErasing(false)
-            console.log(isAddingBomb)
         }
         if (isEditingSrc) {
+            if (tile.tileState === TileState.DEST) return
             matrix[src.row][src.col].setTileState(TileState.UNVISITED)
             tile.setTileState(TileState.SRC)
             setSrc(tile)
@@ -82,8 +82,12 @@ export const GridTile: React.FC<GridTileProps> = ({
             }
             setIsEditingDest(true)
             setIsEditingSrc(false)
+            setIsAddingBomb(false)
+            setIsAddingWall(false)
+            setIsErasing(false)
         }
         if (isEditingDest) {
+            if (tile.tileState === TileState.SRC) return
             matrix[dest.row][dest.col].setTileState(TileState.UNVISITED)
             tile.setTileState(TileState.DEST)
             setDest(tile)
@@ -126,7 +130,8 @@ export const GridTile: React.FC<GridTileProps> = ({
             width={7}
             height={7}>
             <Box id={`node-${tile.row}-${tile.col}`}
-                className={`flex justify-center items-center cursor-pointer node ${tile.isWall ? ' node-wall' : ''}`}>
+                className={`flex justify-center items-center cursor-pointer node ${tile.isWall ? ' node-wall' : ''} 
+                ${tile.tileState === TileState.SRC && isEditingSrc || tile.tileState === TileState.DEST && isEditingDest ? 'animate-bounce' : ''}`}>
                 {getIconFromState(tile.tileState, isEditingSrc, isEditingDest)}</Box>
         </Box>
     )

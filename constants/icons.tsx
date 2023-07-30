@@ -8,8 +8,8 @@ export const sourceVertexIcon = <Box w={7} h={7} backgroundColor='#006AFF'
     <BsCarFrontFill className='text-lg' />
 </Box>
 
-export const sourceVertexIconFocused = <Box w={7} h={7} backgroundColor='white' textColor='#006AFF'
-    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer animate-bounce'>
+export const sourceVertexIconFocused = <Box w={7} h={7} backgroundColor='whiteAlpha.800' textColor='#006AFF'
+    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer absolute animate-spin '>
     <BsCarFrontFill className='text-lg text-blue-500' />
 </Box>
 
@@ -18,7 +18,7 @@ export const destinationVertexIcon = <Box w={7} h={7} backgroundColor='#E50914'
     <FaMapMarkerAlt className='text-lg' />
 </Box>
 
-export const destinationVertexIconFocused = <Box w={7} h={7} backgroundColor='white' textColor='#E50914'
+export const destinationVertexIconFocused = <Box w={7} h={7} backgroundColor='whiteAlpha.800' textColor='#E50914'
     borderRadius={'15%'} className='flex items-center justify-center cursor-pointer animate-bounce'>
     <FaMapMarkerAlt className='text-lg' />
 </Box>
