@@ -3,7 +3,7 @@ import { Box, Button, Grid, Menu, MenuButton, MenuItem, MenuList, Tooltip, useDi
 import { Tile, TileState } from '../pathfinder/Tile'
 import { GridTile } from './GridTile'
 import { COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, dequeue, getNeighbors, isVisited, speedNormalizer } from '../pathfinder/main'
-import { BiCheck, BiChevronDown, BiHelpCircle } from 'react-icons/bi'
+import { BiCheck, BiChevronDown, BiEraser, BiHelpCircle } from 'react-icons/bi'
 import { Algo, AnimationSpeed } from '../models/types'
 import { FiMove } from 'react-icons/fi'
 import { BsCarFrontFill } from 'react-icons/bs'
@@ -39,6 +39,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
     const [isEditingDest, setIsEditingDest] = useState<boolean>(false)
     const [isAddingBomb, setIsAddingBomb] = useState<boolean>(false)
     const [isAddingWalls, setIsAddingWalls] = useState<boolean>(false)
+    const [isErasing, setIsErasing] = useState<boolean>(false)
 
     const [edgeWeight, setEdgeWeight] = useState<number>(20)
     const [animationSpeed, setAnimationSpeed] = useState<AnimationSpeed>(AnimationSpeed.MEDIUM)
@@ -138,7 +139,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
                 }
             }
         }
-        _getShortestPathSequence()
+        alert('No path found! Did you trap your car from all sides? :(')
     }
 
     const _bfs = (): void => {
@@ -270,48 +271,14 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
         return items
     }
 
-    const description = (): JSX.Element => {
-        let description
-        let editing
-        if (algo === Algo.DIJKSTRA) {
-            description = <p>
-                <span className='font-bold text-green-500'>Dijkstra&apos;s</span> Algorithm is weighted, and guaranteed to find the shortest path.
-                It will avoid <span className='font-bold text-orange-600'>bombs</span> when possible.</p>
-        }
-        else if (algo === Algo.GENERIC_BFS) {
-            description = <p><span className='font-bold text-green-500'>Breadth-First Search (BFS)</span> is unweighted, and not guaranteed to find the shortest path.</p>
-        }
-        else if (algo === Algo.GENERIC_DFS) {
-            description = <p><span className='font-bold text-green-500'>Depth-First Search (DFS)</span> unweighted, and not guaranteed to find the shortest path.</p>
-        }
-
-        if (isMousePressed) {
-            editing = <p>Hover over tile to create or delete <span className='font-bold text-gray-200'>walls</span></p>
-        }
-        else if (isEditingSrc) {
-            editing = <p>Click on a tile to edit the <span className='font-bold text-blue-400'>source</span></p>
-        }
-        else if (isEditingDest) {
-            editing = <p>Click on a tile to edit the <span className='font-bold text-red-500'>destination</span></p>
-        }
-        else if (isAddingBomb) {
-            editing = <p>Click on a tile to add or remove a <span className='font-bold text-orange-600'>bomb</span></p>
-        }
-        else {
-            editing = null
-        }
-        return <Box className='flex justify-between w-full'><Box className='text-xl'>{editing}</Box></Box>
-    }
-
     const handleSrcEditClick = () => {
         if (!isEditingSrc) {
             setIsEditingSrc(true)
             setIsEditingDest(false)
             setIsAddingBomb(false)
         }
-        else {
-            setIsEditingSrc(false)
-        }
+        setIsEditingSrc(s => !s)
+
     }
 
     const handleDestEditClick = () => {
@@ -319,6 +286,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
             setIsEditingDest(true)
             setIsEditingSrc(false)
             setIsAddingBomb(false)
+            setIsErasing(false)
         }
         else {
             setIsEditingDest(false)
@@ -327,26 +295,34 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
 
     const handleBombAddClick = () => {
         if (!isAddingBomb) {
-            setIsAddingBomb(s => !s)
             setIsEditingSrc(false)
             setIsEditingDest(false)
             setIsAddingWalls(false)
+            setIsErasing(false)
         }
-        else {
-            setIsAddingBomb(false)
-        }
+        setIsAddingBomb(s => !s)
+
     }
 
     const handleWallsAddClick = () => {
         if (!isAddingWalls) {
-            setIsAddingWalls(s => !s)
             setIsEditingSrc(false)
             setIsEditingDest(false)
             setIsAddingBomb(false)
+            setIsErasing(false)
         }
-        else {
+        setIsAddingWalls(s => !s)
+
+    }
+
+    const handleEraserClick = () => {
+        if (!isErasing) {
+            setIsEditingSrc(false)
+            setIsEditingDest(false)
+            setIsAddingBomb(false)
             setIsAddingWalls(false)
         }
+        setIsErasing(s => !s)
     }
 
 
@@ -364,38 +340,42 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
                 <Button onClick={_pathVisualizer} variant='outline' className='flex gap-2 bg-gray-200 text-black hover:text-white'>
                     <PiPathBold className='text-lg text-purple-600' />Visualize!
                 </Button>
-                <SettingsModal isOpen={isOpen} onOpen={onOpen} onClose={onClose}
-                    animationSpeed={animationSpeed} setAnimationSpeed={setAnimationSpeed}
-                    edgeWeight={edgeWeight} setEdgeWeight={setEdgeWeight} />
-                <Button onClick={() => setReset(true)} variant='outline' className='flex gap-2'><MdOutlineReplay className='text-lg text-red-400' />Reset</Button>
+                <Button onClick={() => setReset(true)} variant='outline' className='flex gap-2 bg-gray-200 text-black hover:text-white'><MdOutlineReplay className='text-lg text-red-400' />Reset</Button>
 
-                <Tooltip label='Bombs are weighted edges.
+                <Box className='mx-auto text-green-400 font-bold'>{isEditingSrc || isEditingDest ?
+                    `Click on a new cell to move the ${isEditingSrc ? 'source' : 'destination'}.`
+                    : 'Customize the grid by adding walls and bombs.'}</Box>
+
+                <Tooltip label='Bombs are WEIGHTED EDGES.
                 Weighted algorithms like Dijkstra&apos;s and A* will try to avoid these cells if it can.' aria-label='Add Bombs'>
                     <Button onClick={handleBombAddClick}
-                        className={`flex gap-3 ${isAddingBomb ? 'bg-orange-600' : ''}`}
-                        variant='outline'><FaBomb /> Bombs
+                        className={`flex gap-3 items-center ${isAddingBomb ? 'bg-orange-600' : ''}`}
+                        variant='outline'><FaBomb className='text-lg' /> Bombs
                     </Button>
                 </Tooltip>
-                <Tooltip label='Walls are impenetrable. The algorithm will try to find a path around these walls.' aria-label='Add Walls'>
+                <Tooltip label='Walls are IMPENETRABLE. The algorithm will try to find a path around these walls.' aria-label='Add Walls'>
                     <Button onClick={handleWallsAddClick}
-                        className={`flex gap-3 ${isAddingWalls ? 'bg-amber-900' : ''}`}
-                        variant='outline'><GiBrickWall /> Walls
+                        className={`flex gap-3 items-center ${isAddingWalls ? 'bg-amber-900' : ''}`}
+                        variant='outline'><GiBrickWall className='text-lg' /> Walls
                     </Button>
                 </Tooltip>
-                <Tooltip label='Move the source vertex.' aria-label='Add Walls'>
-                    <Button onClick={handleSrcEditClick}
-                        className={`flex gap-3 ${isEditingSrc ? 'bg-blue-600' : ''}`}
-                        variant='outline'><BsCarFrontFill /> Source (doesnt work yet)
+                <Tooltip label='Click and drag to RESET cells.' aria-label='Add Walls'>
+                    <Button onClick={handleEraserClick}
+                        className={`flex gap-3 items-center ${isErasing ? 'bg-pink-500' : ''}`}
+                        variant='outline'><BiEraser className='text-lg' /> Erase
                     </Button>
                 </Tooltip>
-                <Box className='mx-auto'>Hint: Click and drag to draw and erase walls.<br /> TODO make this a revolving text with more cool hints</Box>
             </Box>
+
             <Box className='ml-auto flex gap-6'>
                 <Button className='flex gap-2 bg-gray-200 text-black hover:text-white' onClick={onOpenTutorial}>Open Tutorial<BiHelpCircle className='text-xl' /></Button>
                 <Tooltip label='Settings' aria-label='Settings'>
                     <Button onClick={onOpen} variant='outline' className='flex gap-2'> <FaCogs className='text-lg text-green-600' /></Button>
                 </Tooltip>
             </Box>
+            <SettingsModal isOpen={isOpen} onOpen={onOpen} onClose={onClose}
+                animationSpeed={animationSpeed} setAnimationSpeed={setAnimationSpeed}
+                edgeWeight={edgeWeight} setEdgeWeight={setEdgeWeight} />
         </Box>
         <Grid templateColumns={`repeat(${COLS}, 1fr)`} className='mx-auto'>
             {_matrix.map((tileRow) => tileRow.map((tile) => <GridTile key={Math.random()}
@@ -415,7 +395,10 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
                 setIsEditingSrc={setIsEditingSrc}
                 setIsEditingDest={setIsEditingDest}
                 setIsAddingBomb={setIsAddingBomb}
+                setIsAddingWall={setIsAddingWalls}
                 edgeCost={edgeWeight}
+                isErasing={isErasing}
+                setIsErasing={setIsErasing}
                 tile={tile} />))}
         </Grid>
     </Box>

@@ -4,12 +4,22 @@ import { Box } from '@chakra-ui/react'
 import { FaBomb, FaMapMarkerAlt, FaTrafficLight } from 'react-icons/fa'
 
 export const sourceVertexIcon = <Box w={7} h={7} backgroundColor='#006AFF'
-    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer hover:scale-105 duration-100'>
+    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer hover:scale-150 duration-100'>
     <BsCarFrontFill className='text-lg' />
 </Box>
 
+export const sourceVertexIconFocused = <Box w={7} h={7} backgroundColor='white' textColor='#006AFF'
+    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer animate-bounce'>
+    <BsCarFrontFill className='text-lg text-blue-500' />
+</Box>
+
 export const destinationVertexIcon = <Box w={7} h={7} backgroundColor='#E50914'
-    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer  hover:scale-105 duration-100'>
+    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer hover:scale-150 duration-100'>
+    <FaMapMarkerAlt className='text-lg' />
+</Box>
+
+export const destinationVertexIconFocused = <Box w={7} h={7} backgroundColor='white' textColor='#E50914'
+    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer animate-bounce'>
     <FaMapMarkerAlt className='text-lg' />
 </Box>
 
@@ -24,15 +34,16 @@ export const visitedNodeIcon = <Box w={7} h={7} backgroundColor='#450175' border
 
 export const shortestPathIcon = <Box w={7} h={7} backgroundColor='#1DB954' borderRadius={'15%'}></Box>
 
-export const getIconFromState = (state: TileState) => {
-    switch (state) {
-        case TileState.SRC:
-            return sourceVertexIcon
-        case TileState.DEST:
-            return destinationVertexIcon
-        case TileState.BOMB:
-            return bombIcon
-        default:
-            return <></>
+export const getIconFromState = (state: TileState, isEditingSrc: boolean, isEditingDest: boolean) => {
+    if (state === TileState.SRC) {
+        if (isEditingSrc) return sourceVertexIconFocused
+        return sourceVertexIcon
     }
+    if (state === TileState.DEST) {
+        if (isEditingDest) return destinationVertexIconFocused
+        return destinationVertexIcon
+    }
+    if (state === TileState.BOMB) return bombIcon
+
+    if (state === TileState.UNVISITED) return <></>
 }

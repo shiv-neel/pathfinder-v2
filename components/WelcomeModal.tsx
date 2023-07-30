@@ -15,6 +15,7 @@ import { AiOutlinePlus } from 'react-icons/ai'
 import { PiPathBold } from 'react-icons/pi'
 import { MdOutlineReplay } from 'react-icons/md'
 import Image from 'next/image'
+import { destinationVertexIcon, sourceVertexIcon } from '../constants/icons'
 
 interface WelcomeModalProps {
     isOpen: boolean
@@ -76,52 +77,21 @@ const WelcomeContent = () => {
 const SetSrcDestLocationContent = () => {
     return <Box>
         <Box className='text-sm mb-5'>
-            Use the following controls from the right-hand side of the toolbar.
+            To edit the source or destination vertices, simply click on them, and then click on the new location.
         </Box>
         <Box>
 
         </Box>
-        <Box className='flex justify-center items-center'>
-            <Box className='flex flex-col gap-6 items-center'>
-                <Box className='flex items-center gap-6 text-sm'>
-                    Move Source Vertex<Tooltip label='Move Source' aria-label='Move Source Vertex'>
-                        <Button
-                            className='flex gap-3 bg-black'
-                            variant='outline'>
-                            <FiMove /><BsCarFrontFill />
-                        </Button>
-                    </Tooltip>
-                </Box>
-                <Box className='flex items-center gap-6 text-sm'>
-                    Move Destination Vertex<Tooltip label='Move Destination' aria-label='Move Destination Vertex'>
-                        <Button
-                            className='flex gap-3 bg-black'
-                            variant='outline'>
-                            <FiMove /><FaMapMarkerAlt />
-                        </Button>
-                    </Tooltip>
-                </Box>
-                <Box className='flex items-center gap-6 text-sm'>
-                    Add Bomb<Tooltip label='Add Bomb' aria-label='Add Bomb'>
-                        <Button
-                            className='flex gap-3 bg-black'
-                            variant='outline'>
-                            <AiOutlinePlus /><FaBomb />
-                        </Button>
-                    </Tooltip>
-                </Box>
-            </Box>
+        <Box className='flex justify-center items-center gap-6'>
+            {sourceVertexIcon}
+            {destinationVertexIcon}
         </Box>
     </Box>
 }
 
 const DrawWallsContent = () => {
-    const shiftKey = <Box className='flex justify-center items-center gap-3 rounded-md hover:cursor-pointer text-lg
-    p-3 text-black bg-white w-32 shadow-xl my-5'><BsShiftFill /> Shift</Box>
-    const iconGroup = <Box className='flex justify-center items-center mx-auto gap-1 text-lg'>{shiftKey}<BiPlus /> <LiaHandPointerSolid className='text-2xl' /></Box>
     return <Box>
-        <Box className='text-sm'>To draw walls, hold down the shift key, and hover over the cells you wish to toggle walls.
-            {iconGroup}
+        <Box className='text-sm flex gap-1'>To draw walls, press the <strong>Draw Walls</strong> button, and click and drag on the grid.
         </Box>
         <Box className='flex justify-center items-center mt-10'>
             <Image src='/add_walls.gif' alt='' width={400} height={300} />
@@ -133,7 +103,7 @@ const WeightedEdges = () => {
 
     return <Box>
         <Box className='text-sm leading-relaxed'>
-            After clicking the <em>Add Weight Edges</em> button, you can add weighted edges, and edit the weight in the <em>Configure Simulation</em> menu.
+            After clicking the <strong>Bombs</strong> button, you can add weighted edges, and edit the weight in the <strong>Settings</strong> menu.
         </Box>
         <Box className='flex justify-center items-center mt-10'>
 
@@ -160,8 +130,8 @@ const AlgorithmWallsSelectorContent = () => {
         </Box>
         <Box className='flex justify-center items-center mt-5'>
             <Menu>
-                <MenuButton as={Button} rightIcon={<BiChevronDown />} className='bg-gray-200 text-black hover:text-white' variant='outline'>
-                    Selected: {algo}
+                <MenuButton as={Button} rightIcon={<BiChevronDown />} className='bg-black hover:text-white' variant='outline'>
+                    {algo}
                 </MenuButton>
                 <MenuList bg={'black'}>
                     {algoMenuItems()}
@@ -169,11 +139,11 @@ const AlgorithmWallsSelectorContent = () => {
             </Menu>
         </Box>
         <Box className='text-sm leading-relaxed mt-5'>
-            For all other settings, click the <strong>Configure Simulation</strong> button.
+            For all other settings, click the <strong>Settings</strong> button.
         </Box>
         <Box className='flex justify-center items-center mt-5'>
             <Button onClick={() => { }} variant='outline' className='flex gap-2'>
-                <FaCogs className='text-lg text-green-600' /> Configure Simulation</Button>
+                <FaCogs className='text-lg text-green-600' /> </Button>
         </Box>
     </Box>
 }
