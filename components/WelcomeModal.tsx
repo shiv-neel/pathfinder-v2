@@ -33,7 +33,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onOpen, onClose }) 
         onOpen()
     }, [])
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size={'xl'}>
+        <Modal isOpen={isOpen} onClose={onClose} size={'xl'} closeOnOverlayClick={false}>
 
             <ModalOverlay />
             <ModalContent>

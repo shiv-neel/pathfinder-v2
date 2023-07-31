@@ -50,6 +50,17 @@ export const GridTile: React.FC<GridTileProps> = ({
             setIsAddingWall(false)
             setIsErasing(false)
         }
+        if (tile.tileState === TileState.DEST) {
+            if (isEditingDest) {
+                setIsEditingDest(false)
+                return
+            }
+            setIsEditingDest(true)
+            setIsEditingSrc(false)
+            setIsAddingBomb(false)
+            setIsAddingWall(false)
+            setIsErasing(false)
+        }
         if (isErasing) {
             if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
             tile.setIsWall(false)
@@ -74,17 +85,6 @@ export const GridTile: React.FC<GridTileProps> = ({
             tile.setTileState(TileState.SRC)
             setSrc(tile)
             setIsEditingSrc(false)
-        }
-        if (tile.tileState === TileState.DEST) {
-            if (isEditingDest) {
-                setIsEditingDest(false)
-                return
-            }
-            setIsEditingDest(true)
-            setIsEditingSrc(false)
-            setIsAddingBomb(false)
-            setIsAddingWall(false)
-            setIsErasing(false)
         }
         if (isEditingDest) {
             if (tile.tileState === TileState.SRC) return

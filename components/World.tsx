@@ -35,7 +35,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
     const [isEditingSrc, setIsEditingSrc] = useState<boolean>(false)
     const [isEditingDest, setIsEditingDest] = useState<boolean>(false)
     const [isAddingBomb, setIsAddingBomb] = useState<boolean>(false)
-    const [isAddingWalls, setIsAddingWalls] = useState<boolean>(false)
+    const [isAddingWalls, setIsAddingWalls] = useState<boolean>(true)
     const [isErasing, setIsErasing] = useState<boolean>(false)
 
     const [edgeWeight, setEdgeWeight] = useState<number>(20)
@@ -321,6 +321,34 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
         setIsErasing(s => !s)
     }
 
+    const getHelperText = () => {
+        if (isEditingSrc || isEditingDest) {
+            return <Box className='flex gap-3 items-center mx-auto animate-pulse font-bold text-blue-400'>
+                Click on a new cell to move the {isEditingSrc ? 'source' : 'destination'}.
+            </Box>
+        }
+        else if (isAddingWalls) {
+            return <Box className='flex gap-3 items-center mx-auto animate-pulse font-bold text-purple-400'>
+                Click and drag on cells to add WALLS.
+            </Box>
+        }
+        else if (isAddingBomb) {
+            return <Box className='flex gap-3 items-center mx-auto animate-pulse font-bold text-orange-400'>
+                Click and drag on cells to add BOMBS.
+            </Box>
+        }
+        else if (isErasing) {
+            return <Box className='flex gap-3 items-center mx-auto animate-pulse font-bold text-red-400'>
+                Click and drag on cells to ERASE bombs and walls.
+            </Box>
+        }
+        else {
+            return <Box className='flex gap-3 items-center mx-auto animate-pulse font-bold text-green-400'>
+                Customize your grid, and then hit visualize!
+            </Box>
+        }
+    }
+
 
     return <Box className='flex flex-col justify-center'>
         <Box className='flex gap-6 items-center mx-10 mb-5'>
@@ -340,10 +368,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
             </Box>
 
             <Box className='ml-auto flex gap-6'>
-                <Box className={`flex gap-3 items-center mx-auto animate-pulse font-bold ${isEditingSrc || isEditingDest ? 'text-purple-400' : 'text-green-400'}`}>{isEditingSrc || isEditingDest ?
-                    `Click on a new cell to move the ${isEditingSrc ? 'source' : 'destination'}.`
-                    : 'Customize the grid by drawing walls and bombs.'}
-                </Box>
+                {getHelperText()}
                 <Tooltip label='Bombs are WEIGHTED EDGES.
                 Weighted algorithms like Dijkstra&apos;s and A* will try to avoid these cells if it can.' aria-label='Add Bombs'>
                     <Button onClick={handleBombAddClick}

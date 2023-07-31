@@ -9,7 +9,7 @@ export const sourceVertexIcon = <Box w={7} h={7} backgroundColor='#006AFF'
 </Box>
 
 export const sourceVertexIconFocused = <Box w={7} h={7} backgroundColor='whiteAlpha.800' textColor='#006AFF'
-    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer absolute animate-spin '>
+    borderRadius={'15%'} className='flex items-center justify-center cursor-pointer animate-bounce '>
     <BsCarFrontFill className='text-lg text-blue-500' />
 </Box>
 
