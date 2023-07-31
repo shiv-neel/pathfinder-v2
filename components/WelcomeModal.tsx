@@ -74,10 +74,20 @@ const WelcomeContent = () => {
     </Box>
 }
 
+const DrawWallsContent = () => {
+    return <Box>
+        <Box className='text-lg flex gap-1'>Click the <strong>Draw Walls</strong> button, then click and drag on the grid.
+        </Box>
+        <Box className='flex justify-center items-center mt-10'>
+            <Image src='/add_walls.gif' alt='' width={400} height={300} />
+        </Box>
+    </Box>
+}
+
 const SetSrcDestLocationContent = () => {
     return <Box>
-        <Box className='text-sm mb-5'>
-            To edit the source or destination vertices, simply click on them, and then click on the new location.
+        <Box className='text-lg mb-5'>
+            Click on src and dest nodes to set their new locations.
         </Box>
         <Box>
 
@@ -89,21 +99,11 @@ const SetSrcDestLocationContent = () => {
     </Box>
 }
 
-const DrawWallsContent = () => {
-    return <Box>
-        <Box className='text-sm flex gap-1'>To draw walls, press the <strong>Draw Walls</strong> button, and click and drag on the grid.
-        </Box>
-        <Box className='flex justify-center items-center mt-10'>
-            <Image src='/add_walls.gif' alt='' width={400} height={300} />
-        </Box>
-    </Box>
-}
-
 const WeightedEdges = () => {
 
     return <Box>
-        <Box className='text-sm leading-relaxed'>
-            After clicking the <strong>Bombs</strong> button, you can add weighted edges, and edit the weight in the <strong>Settings</strong> menu.
+        <Box className='text-lg leading-relaxed'>
+            After clicking the <strong>Draw Bombs</strong> button, you can add weighted edges, and edit the weight in the <strong>Settings</strong> menu.
         </Box>
         <Box className='flex justify-center items-center mt-10'>
 
@@ -125,7 +125,7 @@ const AlgorithmWallsSelectorContent = () => {
     }
 
     return <Box>
-        <Box className='text-sm leading-relaxed'>
+        <Box className='text-lg leading-relaxed'>
             Select the algorithm to visualize using the dropdown menu in the toolbar.
         </Box>
         <Box className='flex justify-center items-center mt-5'>
@@ -138,7 +138,7 @@ const AlgorithmWallsSelectorContent = () => {
                 </MenuList>
             </Menu>
         </Box>
-        <Box className='text-sm leading-relaxed mt-5'>
+        <Box className='text-lg leading-relaxed mt-5'>
             For all other settings, click the <strong>Settings</strong> button.
         </Box>
         <Box className='flex justify-center items-center mt-5'>
@@ -151,7 +151,7 @@ const AlgorithmWallsSelectorContent = () => {
 
 const SimulationControls = () => {
     return <Box>
-        <Box className='text-sm leading-relaxed'>
+        <Box className='text-lg leading-relaxed'>
             Use these controls to start and reset the simulation.
         </Box>
         <Box className='flex gap-6 justify-center items-center mt-5'>
@@ -160,7 +160,7 @@ const SimulationControls = () => {
         </Box>
         <Box className='text-sm mt-5 italic'>
             Disclaimer: the simulation logic uses CSS keyframes, which do not pair nicely with react state hooks.
-            Thus, resetting <strong>during</strong> the simulation may cause unexpected behavior.
+            Thus, resetting <strong>during</strong> the simulation may cause unexpected animation behavior.
         </Box>
     </Box>
 }

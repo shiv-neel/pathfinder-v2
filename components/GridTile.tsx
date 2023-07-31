@@ -39,6 +39,17 @@ export const GridTile: React.FC<GridTileProps> = ({
 
     const handleMouseDown = () => {
         setIsMousePressed(true)
+        if (tile.tileState === TileState.SRC) {
+            if (isEditingSrc) {
+                setIsEditingSrc(false)
+                return
+            }
+            setIsEditingSrc(true)
+            setIsEditingDest(false)
+            setIsAddingBomb(false)
+            setIsAddingWall(false)
+            setIsErasing(false)
+        }
         if (isErasing) {
             if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
             tile.setIsWall(false)
@@ -56,17 +67,6 @@ export const GridTile: React.FC<GridTileProps> = ({
             tile.dist = edgeCost
             setBombs([...bombs, tile])
             tile.setIsWall(false)
-        }
-        if (tile.tileState === TileState.SRC) {
-            if (isEditingSrc) {
-                setIsEditingSrc(false)
-                return
-            }
-            setIsEditingSrc(true)
-            setIsEditingDest(false)
-            setIsAddingBomb(false)
-            setIsAddingWall(false)
-            setIsErasing(false)
         }
         if (isEditingSrc) {
             if (tile.tileState === TileState.DEST) return

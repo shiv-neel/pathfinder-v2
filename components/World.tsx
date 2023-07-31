@@ -3,12 +3,9 @@ import { Box, Button, Grid, Menu, MenuButton, MenuItem, MenuList, Tooltip, useDi
 import { Tile, TileState } from '../pathfinder/Tile'
 import { GridTile } from './GridTile'
 import { COLS, INITIAL_MATRIX_STATE, ROWS, WALL_COST, dequeue, getNeighbors, isVisited, speedNormalizer } from '../pathfinder/main'
-import { BiCheck, BiChevronDown, BiEraser, BiHelpCircle } from 'react-icons/bi'
+import { BiCheck, BiChevronDown, BiChevronRight, BiEraser, BiHelpCircle } from 'react-icons/bi'
 import { Algo, AnimationSpeed } from '../models/types'
-import { FiMove } from 'react-icons/fi'
-import { BsCarFrontFill } from 'react-icons/bs'
-import { FaGrinTears, FaMapMarkerAlt, FaBomb, FaCogs, FaBandcamp, FaPencilAlt, FaSchool, FaGraduationCap } from 'react-icons/fa'
-import { AiOutlinePlus } from 'react-icons/ai'
+import { FaBomb, FaCogs } from 'react-icons/fa'
 import { PiPathBold } from 'react-icons/pi'
 import { MdOutlineReplay } from 'react-icons/md'
 import SettingsModal from './SettingsModal'
@@ -340,33 +337,35 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
                     <PiPathBold className='text-lg text-purple-600' />Visualize!
                 </Button>
                 <Button onClick={() => setReset(true)} variant='outline' className='flex gap-2 bg-gray-200 text-black hover:text-white'><MdOutlineReplay className='text-lg text-red-400' />Reset</Button>
+            </Box>
 
-                <Box className='mx-auto text-green-400 font-bold'>{isEditingSrc || isEditingDest ?
+            <Box className='ml-auto flex gap-6'>
+                <Box className={`flex gap-3 items-center mx-auto animate-pulse font-bold ${isEditingSrc || isEditingDest ? 'text-purple-400' : 'text-green-400'}`}>{isEditingSrc || isEditingDest ?
                     `Click on a new cell to move the ${isEditingSrc ? 'source' : 'destination'}.`
-                    : 'Customize the grid by drawing walls and bombs.'}</Box>
-
+                    : 'Customize the grid by drawing walls and bombs.'}
+                </Box>
                 <Tooltip label='Bombs are WEIGHTED EDGES.
                 Weighted algorithms like Dijkstra&apos;s and A* will try to avoid these cells if it can.' aria-label='Add Bombs'>
                     <Button onClick={handleBombAddClick}
-                        className={`flex gap-3 items-center ${isAddingBomb ? 'bg-orange-600' : ''}`}
+                        className={`flex gap-3 items-center`}
+                        colorScheme={isAddingBomb ? 'orange' : 'gray'}
                         variant='outline'><FaBomb className='text-lg' /> Bombs
                     </Button>
                 </Tooltip>
                 <Tooltip label='Walls are IMPENETRABLE. The algorithm will try to find a path around these walls.' aria-label='Add Walls'>
                     <Button onClick={handleWallsAddClick}
-                        className={`flex gap-3 items-center ${isAddingWalls ? 'bg-amber-900' : ''}`}
+                        className={`flex gap-3 items-center`}
+                        colorScheme={isAddingWalls ? 'purple' : 'gray'}
                         variant='outline'><GiBrickWall className='text-lg' /> Walls
                     </Button>
                 </Tooltip>
                 <Tooltip label='Click and drag to RESET cells.' aria-label='Add Walls'>
                     <Button onClick={handleEraserClick}
-                        className={`flex gap-3 items-center ${isErasing ? 'bg-pink-500' : ''}`}
-                        variant='outline'><BiEraser className='text-lg' /> Erase
+                        className={`flex gap-3 items-center`}
+                        colorScheme={isErasing ? 'pink' : 'gray'}
+                        variant='outline'><BiEraser className='text-lg' /> Eraser
                     </Button>
                 </Tooltip>
-            </Box>
-
-            <Box className='ml-auto flex gap-6'>
                 <Button className='flex gap-2 bg-gray-200 text-black hover:text-white' onClick={onOpenTutorial}>Open Tutorial<BiHelpCircle className='text-xl' /></Button>
                 <Tooltip label='Settings' aria-label='Settings'>
                     <Button onClick={onOpen} variant='outline' className='flex gap-2'> <FaCogs className='text-lg text-green-600' /></Button>
