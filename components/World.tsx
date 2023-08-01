@@ -94,7 +94,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
             case Algo.DIJKSTRA:
                 _dijkstra()
                 break
-            case Algo.GENERIC_BFS:
+            case Algo.GREEDY_BFS:
                 _bfs()
                 break
             case Algo.GENERIC_DFS:
@@ -260,6 +260,15 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
         for (const _algo of Object.values(Algo)) {
             items.push(<MenuItem isDisabled={_algo === Algo.A_STAR} key={Math.random()} className='flex items-center hover:font-bold' onClick={() => {
                 setAlgo(_algo)
+                if (_algo === Algo.GENERIC_DFS) {
+                    alert('This implementation of DFS is unweighted (ignores bombs/weighted edges), and DOES NOT guarantee the shortest path.')
+                }
+                else if (_algo === Algo.GREEDY_BFS) {
+                    alert('This implementation of Greedy BFS is unweighted (ignores bombs/weighted edges), but DOES guarantee the shortest path.')
+                }
+                else if (_algo === Algo.DIJKSTRA) {
+                    alert('This implementation of Dijkstra is weighted (takes bombs/weighted edges into account), and DOES guarantee the shortest path.')
+                }
             }}>
                 <>{_algo == algo ? <BiCheck className='text-xl text-green-600' /> : null}</>
                 <>{_algo}</></MenuItem>)

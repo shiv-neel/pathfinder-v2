@@ -66,9 +66,9 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onOpen, onClose }) 
 
 const WelcomeContent = () => {
     return <Box>
-        <Box className='text-sm leading-relaxed'>
+        <Box className='leading-relaxed'>
             Welcome to Pathfinding Visualizer! This application simulates shortest path discovery for different graph algorithms,
-            such as BFS, DFS, and Dijkstra&apos;s.
+            such as BFS, DFS, Dijkstra&apos;s, and A*.
         </Box>
         <Box className='flex justify-center items-center mt-10'>
 
@@ -79,7 +79,7 @@ const WelcomeContent = () => {
 
 const DrawWallsContent = () => {
     return <Box>
-        <Box className='text-md flex gap-1'>Click the <strong>Draw Walls</strong> button, then click and drag on the grid.
+        <Box className='gap-1'>Click the <strong>Draw Walls</strong> button, then click and drag on the grid.
             Walls are impenetrable, and cannot be traversed by the algorithm.
         </Box>
         <Box className='flex justify-center items-center mt-10'>
@@ -90,7 +90,7 @@ const DrawWallsContent = () => {
 
 const SetSrcDestLocationContent = () => {
     return <Box>
-        <Box className='text-lg mb-5'>
+        <Box className='mb-5'>
             Drag and drop the source and destination vertices to the desired locations.
         </Box>
         <Box>
@@ -130,7 +130,7 @@ const AlgorithmWallsSelectorContent = () => {
     }
 
     return <Box>
-        <Box className='text-md leading-relaxed'>
+        <Box className='leading-relaxed'>
             Select the algorithm to visualize using the dropdown menu in the toolbar.
         </Box>
         <Box className='flex justify-center items-center mt-5'>
@@ -143,7 +143,7 @@ const AlgorithmWallsSelectorContent = () => {
                 </MenuList>
             </Menu>
         </Box>
-        <Box className='text-lg leading-relaxed mt-5'>
+        <Box className='leading-relaxed mt-5'>
             For all other settings, click the <strong>Settings</strong> button.
         </Box>
         <Box className='flex justify-center items-center mt-5'>
@@ -156,7 +156,7 @@ const AlgorithmWallsSelectorContent = () => {
 
 const SimulationControls = () => {
     return <Box>
-        <Box className='text-lg leading-relaxed'>
+        <Box className='leading-relaxed'>
             Use these controls to start and reset the simulation.
         </Box>
         <Box className='flex gap-6 justify-center items-center mt-5'>

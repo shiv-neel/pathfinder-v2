@@ -1,7 +1,7 @@
 export enum Algo {
     DIJKSTRA = 'Dijkstra',
     A_STAR = 'A* (WIP)',
-    GENERIC_BFS = 'Generic BFS',
+    GREEDY_BFS = 'Greedy BFS',
     GENERIC_DFS = 'Generic DFS',
 }
 
