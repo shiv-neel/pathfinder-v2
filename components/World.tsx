@@ -35,7 +35,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
     const [isEditingSrc, setIsEditingSrc] = useState<boolean>(false)
     const [isEditingDest, setIsEditingDest] = useState<boolean>(false)
     const [isAddingBomb, setIsAddingBomb] = useState<boolean>(false)
-    const [isAddingWalls, setIsAddingWalls] = useState<boolean>(true)
+    const [isAddingWalls, setIsAddingWalls] = useState<boolean>(false)
     const [isErasing, setIsErasing] = useState<boolean>(false)
 
     const [edgeWeight, setEdgeWeight] = useState<number>(20)
@@ -391,7 +391,6 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
                         variant='outline'><BiEraser className='text-lg' /> Eraser
                     </Button>
                 </Tooltip>
-                <Button className='flex gap-2 bg-gray-200 text-black hover:text-white' onClick={onOpenTutorial}>Open Tutorial<BiHelpCircle className='text-xl' /></Button>
                 <Tooltip label='Settings' aria-label='Settings'>
                     <Button onClick={onOpen} variant='outline' className='flex gap-2'> <FaCogs className='text-lg text-green-600' /></Button>
                 </Tooltip>

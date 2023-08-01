@@ -34,16 +34,11 @@ export const GridTile: React.FC<GridTileProps> = ({
     dest, setDest, isEditingDest, bombs, setBombs, isAddingBomb, isAddingWalls,
     matrix, setIsEditingSrc, setIsEditingDest, setIsAddingBomb, setIsAddingWall, edgeCost, isMousePressed, setIsMousePressed, isErasing, setIsErasing
 }) => {
-    const [isWall, setIsWall] = useState<boolean>(false)
-    const [isBomb, setIsBomb] = useState<boolean>(false)
+    const [isWall, setIsWall] = useState(false)
 
     const handleMouseDown = () => {
         setIsMousePressed(true)
         if (tile.tileState === TileState.SRC) {
-            if (isEditingSrc) {
-                setIsEditingSrc(false)
-                return
-            }
             setIsEditingSrc(true)
             setIsEditingDest(false)
             setIsAddingBomb(false)
@@ -51,10 +46,6 @@ export const GridTile: React.FC<GridTileProps> = ({
             setIsErasing(false)
         }
         if (tile.tileState === TileState.DEST) {
-            if (isEditingDest) {
-                setIsEditingDest(false)
-                return
-            }
             setIsEditingDest(true)
             setIsEditingSrc(false)
             setIsAddingBomb(false)
@@ -97,6 +88,14 @@ export const GridTile: React.FC<GridTileProps> = ({
 
     const handleMouseEnter = () => {
         if (!isMousePressed) return
+        if (isEditingSrc) {
+            matrix[src.row][src.col].setTileState(TileState.UNVISITED)
+            setSrc(tile)
+        }
+        if (isEditingDest) {
+            matrix[dest.row][dest.col].setTileState(TileState.UNVISITED)
+            setDest(tile)
+        }
         if (isErasing) {
             if (tile.tileState === TileState.SRC || tile.tileState === TileState.DEST) return
             tile.setIsWall(false)
@@ -119,7 +118,15 @@ export const GridTile: React.FC<GridTileProps> = ({
     }
 
     const handleMouseUp = () => {
+        if (isEditingSrc) {
+            setSrc(tile)
+        }
+        if (isEditingDest) {
+            setDest(tile)
+        }
         setIsMousePressed(false)
+        setIsEditingSrc(false)
+        setIsEditingDest(false)
     }
 
     return (
@@ -130,8 +137,7 @@ export const GridTile: React.FC<GridTileProps> = ({
             width={7}
             height={7}>
             <Box id={`node-${tile.row}-${tile.col}`}
-                className={`flex justify-center items-center cursor-pointer node ${tile.isWall ? ' node-wall' : ''} 
-                ${tile.tileState === TileState.SRC && isEditingSrc || tile.tileState === TileState.DEST && isEditingDest ? 'animate-bounce' : ''}`}>
+                className={`flex justify-center items-center cursor-pointer node ${tile.isWall ? ' node-wall' : ''}`}>
                 {getIconFromState(tile.tileState, isEditingSrc, isEditingDest)}</Box>
         </Box>
     )

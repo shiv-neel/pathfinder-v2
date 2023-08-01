@@ -4,7 +4,7 @@ import { Dispatch, SetStateAction, useContext } from 'react'
 import { destinationVertexIcon, shortestPathIcon, sourceVertexIcon, bombIcon, visitedNodeIcon, wallIcon } from '../constants/icons'
 import { FaPlus } from 'react-icons/fa'
 import { PiGraphFill } from 'react-icons/pi'
-import { BiSolidHelpCircle } from 'react-icons/bi'
+import { BiHelpCircle, BiSolidHelpCircle } from 'react-icons/bi'
 
 interface ToolbarProps {
     onOpen: () => void
@@ -13,10 +13,10 @@ interface ToolbarProps {
 export const Toolbar: React.FC<ToolbarProps> = ({ onOpen }) => {
 
     return <Box className='flex items-center mx-10 py-5 mb-5 mt-5'>
-        <Box className='flex items-center gap-3'>
+        <Box className='flex items-center gap-5'>
             <PiGraphFill className='text-5xl text-purple-600' />
             <Heading as='h1'>Pathfinding Visualizer</Heading>
-            <BiSolidHelpCircle className='text-4xl text-white cursor-pointer hover:scale-150 duration-100' onClick={onOpen} />
+            <Button className='flex gap-2 bg-gray-200 text-black hover:text-white' onClick={onOpen}>Open Tutorial<BiHelpCircle className='text-xl' /></Button>
         </Box>
         <Box className='flex justify-start flex-col ml-auto'>
             <Box className='flex gap-5'>
