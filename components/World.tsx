@@ -35,7 +35,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
     const [isEditingSrc, setIsEditingSrc] = useState<boolean>(false)
     const [isEditingDest, setIsEditingDest] = useState<boolean>(false)
     const [isAddingBomb, setIsAddingBomb] = useState<boolean>(false)
-    const [isAddingWalls, setIsAddingWalls] = useState<boolean>(false)
+    const [isAddingWalls, setIsAddingWalls] = useState<boolean>(true)
     const [isErasing, setIsErasing] = useState<boolean>(false)
 
     const [edgeWeight, setEdgeWeight] = useState<number>(20)
@@ -267,28 +267,6 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
         return items
     }
 
-    const handleSrcEditClick = () => {
-        if (!isEditingSrc) {
-            setIsEditingSrc(true)
-            setIsEditingDest(false)
-            setIsAddingBomb(false)
-        }
-        setIsEditingSrc(s => !s)
-
-    }
-
-    const handleDestEditClick = () => {
-        if (!isEditingDest) {
-            setIsEditingDest(true)
-            setIsEditingSrc(false)
-            setIsAddingBomb(false)
-            setIsErasing(false)
-        }
-        else {
-            setIsEditingDest(false)
-        }
-    }
-
     const handleBombAddClick = () => {
         if (!isAddingBomb) {
             setIsEditingSrc(false)
@@ -323,28 +301,28 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
 
     const getHelperText = () => {
         if (isEditingSrc || isEditingDest) {
-            return <Box className='flex gap-3 items-center mx-auto animate-pulse font-bold text-blue-400'>
+            return <Box className='flex gap-3 items-center mx-auto animate-bounce font-bold text-blue-400'>
                 Drag and drop {isEditingSrc ? 'source' : 'destination'}.
             </Box>
         }
         else if (isAddingWalls) {
-            return <Box className='flex gap-3 items-center mx-auto animate-pulse font-bold text-purple-400'>
+            return <Box className='flex gap-3 items-center mx-auto animate-bounce font-bold text-purple-400'>
                 Click and drag on cells to add WALLS.
             </Box>
         }
         else if (isAddingBomb) {
-            return <Box className='flex gap-3 items-center mx-auto animate-pulse font-bold text-orange-400'>
+            return <Box className='flex gap-3 items-center mx-auto animate-bounce font-bold text-orange-400'>
                 Click and drag on cells to add BOMBS.
             </Box>
         }
         else if (isErasing) {
-            return <Box className='flex gap-3 items-center mx-auto animate-pulse font-bold text-red-400'>
+            return <Box className='flex gap-3 items-center mx-auto animate-bounce font-bold text-red-400'>
                 Click and drag on cells to ERASE bombs and walls.
             </Box>
         }
         else {
             return <Box className='flex gap-3 items-center mx-auto animate-pulse font-bold text-green-400'>
-                Customize your grid, and then hit visualize!
+                Finish customizing your grid, and then hit visualize!
             </Box>
         }
     }
@@ -369,19 +347,19 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
 
             <Box className='ml-auto flex gap-6'>
                 {getHelperText()}
+                <Tooltip label='Walls are IMPENETRABLE. The algorithm will try to find a path around these walls.' aria-label='Add Walls'>
+                    <Button onClick={handleWallsAddClick}
+                        className={`flex gap-3 items-center`}
+                        colorScheme={isAddingWalls ? 'purple' : 'gray'}
+                        variant='outline'><GiBrickWall className='text-lg' /> Walls
+                    </Button>
+                </Tooltip>
                 <Tooltip label='Bombs are WEIGHTED EDGES.
                 Weighted algorithms like Dijkstra&apos;s and A* will try to avoid these cells if it can.' aria-label='Add Bombs'>
                     <Button onClick={handleBombAddClick}
                         className={`flex gap-3 items-center`}
                         colorScheme={isAddingBomb ? 'orange' : 'gray'}
                         variant='outline'><FaBomb className='text-lg' /> Bombs
-                    </Button>
-                </Tooltip>
-                <Tooltip label='Walls are IMPENETRABLE. The algorithm will try to find a path around these walls.' aria-label='Add Walls'>
-                    <Button onClick={handleWallsAddClick}
-                        className={`flex gap-3 items-center`}
-                        colorScheme={isAddingWalls ? 'purple' : 'gray'}
-                        variant='outline'><GiBrickWall className='text-lg' /> Walls
                     </Button>
                 </Tooltip>
                 <Tooltip label='Click and drag to RESET cells.' aria-label='Add Walls'>

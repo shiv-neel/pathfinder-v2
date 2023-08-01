@@ -127,6 +127,9 @@ export const GridTile: React.FC<GridTileProps> = ({
         setIsMousePressed(false)
         setIsEditingSrc(false)
         setIsEditingDest(false)
+        setIsAddingBomb(false)
+        setIsAddingWall(false)
+        setIsErasing(false)
     }
 
     return (
