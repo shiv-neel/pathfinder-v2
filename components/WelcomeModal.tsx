@@ -1,12 +1,8 @@
 import { Box, Button, Menu, MenuButton, MenuItem, MenuList, Modal, ModalBody, ModalCloseButton, ModalContent, ModalFooter, ModalHeader, ModalOverlay, Tooltip, useDisclosure } from '@chakra-ui/react'
 import { useEffect, useState } from 'react'
-import { World } from './World'
-import { FiMove } from 'react-icons/fi'
-import { BsCarFrontFill, BsShiftFill } from 'react-icons/bs'
-import { FaBomb, FaCogs, FaMapMarkerAlt, FaMousePointer } from 'react-icons/fa'
+import { FaCogs } from 'react-icons/fa'
 import { Algo } from '../models/types'
-import { BiCheck, BiChevronDown, BiPlus } from 'react-icons/bi'
-import { LiaHandPointerSolid } from 'react-icons/lia'
+import { BiCheck, BiChevronDown } from 'react-icons/bi'
 
 import '../public/maze_demo.gif'
 import '../public/add_walls.gif'
@@ -36,7 +32,7 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onOpen, onClose }) 
         <Modal isOpen={isOpen} onClose={() => {
             onClose()
             setPage(0)
-        }} size={'xl'} closeOnOverlayClick={false}>
+        }} size={'3xl'} closeOnOverlayClick={false}>
 
             <ModalOverlay />
             <ModalContent>
@@ -50,6 +46,9 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onOpen, onClose }) 
                         <Button variant='outline' mr={'auto'} onClick={onClose} colorScheme='black'>
                             Skip Tutorial
                         </Button>
+                        <Box mr={4} onClick={() => setPage(0)} className='text-white cursor-pointer hover:underline'>
+                            First
+                        </Box>
                         <Button variant='outline' mr={3} onClick={() => setPage(p => p - 1)} isDisabled={page === 0} colorScheme='black'>
                             Prev
                         </Button>
@@ -79,7 +78,7 @@ const WelcomeContent = () => {
 
 const DrawWallsContent = () => {
     return <Box>
-        <Box className='gap-1'>Click the <strong>Draw Walls</strong> button, then click and drag on the grid.
+        <Box className='gap-1'>To draw walls, click the <strong>Draw Walls</strong> button, then click and drag on the grid.
             Walls are impenetrable, and cannot be traversed by the algorithm.
         </Box>
         <Box className='flex justify-center items-center mt-10'>
@@ -91,7 +90,7 @@ const DrawWallsContent = () => {
 const SetSrcDestLocationContent = () => {
     return <Box>
         <Box className='mb-5'>
-            Drag and drop the source and destination vertices to the desired locations.
+            To move the source and destination nodes, simply drag and drop them to the desired locations.
         </Box>
         <Box>
 
@@ -107,8 +106,8 @@ const WeightedEdges = () => {
 
     return <Box>
         <Box className='text-md leading-relaxed'>
-            After clicking the <strong>Draw Bombs</strong> button, you can add weighted edges, and edit the weight in the <strong>Settings</strong> menu.
-            The algorithm will try to avoid these weights if they are higher than the weight of the empty cell (5).
+            To add weighted edges, or bombs, click the <strong>Draw Bombs</strong> button, you can add weighted edges,
+            and edit the weight in the <strong>Settings</strong> menu. The algorithm will avoid these edges if possible, depending on their weight.
         </Box>
         <Box className='flex justify-center items-center mt-10'>
 
