@@ -43,7 +43,7 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onOpen, onClose, 
                                             </SliderTrack>
                                             <SliderThumb />
                                         </Slider>
-                                        +50
+                                        50
                                     </Box>
                                 </Box>
                                 <Box>
