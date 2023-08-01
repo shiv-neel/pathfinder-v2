@@ -87,7 +87,7 @@ const DrawWallsContent = () => {
 const SetSrcDestLocationContent = () => {
     return <Box>
         <Box className='text-lg mb-5'>
-            Click on src and dest nodes to set their new locations.
+            Drag and drop the source and destination vertices to the desired locations.
         </Box>
         <Box>
 

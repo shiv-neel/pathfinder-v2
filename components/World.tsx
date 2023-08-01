@@ -324,7 +324,7 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
     const getHelperText = () => {
         if (isEditingSrc || isEditingDest) {
             return <Box className='flex gap-3 items-center mx-auto animate-pulse font-bold text-blue-400'>
-                Click on a new cell to move the {isEditingSrc ? 'source' : 'destination'}.
+                Drag and drop {isEditingSrc ? 'source' : 'destination'}.
             </Box>
         }
         else if (isAddingWalls) {
