@@ -33,7 +33,10 @@ const WelcomeModal: React.FC<WelcomeModalProps> = ({ isOpen, onOpen, onClose }) 
         onOpen()
     }, [])
     return (
-        <Modal isOpen={isOpen} onClose={onClose} size={'xl'} closeOnOverlayClick={false}>
+        <Modal isOpen={isOpen} onClose={() => {
+            onClose()
+            setPage(0)
+        }} size={'xl'} closeOnOverlayClick={false}>
 
             <ModalOverlay />
             <ModalContent>
@@ -76,7 +79,8 @@ const WelcomeContent = () => {
 
 const DrawWallsContent = () => {
     return <Box>
-        <Box className='text-lg flex gap-1'>Click the <strong>Draw Walls</strong> button, then click and drag on the grid.
+        <Box className='text-md flex gap-1'>Click the <strong>Draw Walls</strong> button, then click and drag on the grid.
+            Walls are impenetrable, and cannot be traversed by the algorithm.
         </Box>
         <Box className='flex justify-center items-center mt-10'>
             <Image src='/add_walls.gif' alt='' width={400} height={300} />
@@ -102,8 +106,9 @@ const SetSrcDestLocationContent = () => {
 const WeightedEdges = () => {
 
     return <Box>
-        <Box className='text-lg leading-relaxed'>
+        <Box className='text-md leading-relaxed'>
             After clicking the <strong>Draw Bombs</strong> button, you can add weighted edges, and edit the weight in the <strong>Settings</strong> menu.
+            The algorithm will try to avoid these weights if they are higher than the weight of the empty cell (5).
         </Box>
         <Box className='flex justify-center items-center mt-10'>
 
@@ -125,7 +130,7 @@ const AlgorithmWallsSelectorContent = () => {
     }
 
     return <Box>
-        <Box className='text-lg leading-relaxed'>
+        <Box className='text-md leading-relaxed'>
             Select the algorithm to visualize using the dropdown menu in the toolbar.
         </Box>
         <Box className='flex justify-center items-center mt-5'>
