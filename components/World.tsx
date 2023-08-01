@@ -26,8 +26,8 @@ export const World: React.FC<WorldProps> = ({ isMousePressed, setIsMousePressed,
     var _visitedSet: Tile[] = []
 
 
-    const [src, setSrc] = useState<Tile>(new Tile(TileState.SRC, 12, 14))
-    const [dest, setDest] = useState<Tile>(new Tile(TileState.DEST, 12, 28))
+    const [src, setSrc] = useState<Tile>(new Tile(TileState.SRC, 12, 11))
+    const [dest, setDest] = useState<Tile>(new Tile(TileState.DEST, 12, 31))
     const [bombs, setBombs] = useState<Tile[]>([])
     const [algo, setAlgo] = useState<Algo>(Algo.DIJKSTRA)
     const [reset, setReset] = useState<boolean>(false)
