@@ -6,7 +6,7 @@ const Footer = () => {
     return (
         // <Link href='https://shivneel.me'>
         <Box className='flex justify-center items-center gap-2 mt-5'>
-            Made with <BsSuitHeartFill className='text-red-600' /> by Shiv Neelakantan using TypeScript, React, and Chakra UI
+            Made with <BsSuitHeartFill className='text-red-600' /> by Shiv Neelakantan using TypeScript, React, and TailwindCSS
         </Box>
         // </Link>
     )
