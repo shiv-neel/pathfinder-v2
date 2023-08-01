@@ -34,16 +34,16 @@ const SettingsModal: React.FC<SettingsModalProps> = ({ isOpen, onOpen, onClose, 
                                     <Box className='flex gap-5'>Bomb: {edgeWeight} <p className='underline cursor-pointer text-purple-400' onClick={() => setEdgeWeight(20)}>Reset to Default</p></Box>
                                 </Box>
                                 <Box>
-                                    <Box className='text-lg font-semibold mb-2 mt-5'>Bomb Weight [ -45, +55 ] </Box>
+                                    <Box className='text-lg font-semibold mb-2 mt-5'>Bomb Weight [ +5, +50 ] </Box>
                                     <Box className='text-sm flex gap-5 items-center'>
-                                        -45
-                                        <Slider value={edgeWeight} defaultValue={edgeWeight} min={-45} max={55} onChange={(val) => setEdgeWeight(val)} step={1}>
+                                        5
+                                        <Slider value={edgeWeight} defaultValue={edgeWeight} min={5} max={50} onChange={(val) => setEdgeWeight(val)} step={1}>
                                             <SliderTrack>
                                                 <SliderFilledTrack />
                                             </SliderTrack>
                                             <SliderThumb />
                                         </Slider>
-                                        +55
+                                        +50
                                     </Box>
                                 </Box>
                                 <Box>
